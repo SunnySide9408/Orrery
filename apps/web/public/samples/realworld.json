@@ -2635,7 +2635,9 @@
       "id": "high-fan-out:src/app/features/article/pages/article/article.component.ts",
       "category": "high-fan-out",
       "severity": "info",
-      "nodeIds": ["src/app/features/article/pages/article/article.component.ts"],
+      "nodeIds": [
+        "src/app/features/article/pages/article/article.component.ts"
+      ],
       "explanation": "ArticleComponent depends directly on 16 files. It may be doing several jobs; this is a prompt to review, not a defect.",
       "rule": "High fan-out: 10 or more files, the 95th percentile of this project or 10, whichever is higher",
       "threshold": 10,
@@ -2711,15 +2713,26 @@
       "id": "high-fan-in:src/app/core/auth/services/user.service.ts",
       "category": "high-fan-in",
       "severity": "info",
-      "nodeIds": ["src/app/core/auth/services/user.service.ts"],
+      "nodeIds": [
+        "src/app/core/auth/services/user.service.ts"
+      ],
       "explanation": "UserService is used directly by 14 files. A change here potentially affects all of them, according to static relationships.",
       "rule": "High fan-in: 10 or more files, the 95th percentile of this project or 10, whichever is higher",
       "threshold": 10,
       "limits": "Counts imports, standalone imports, lazy routes and injection. Specs are left out. Usage that only appears in templates is not seen.",
       "evidencePaths": [
-        ["src/app/app.config.ts", "src/app/core/auth/services/user.service.ts"],
-        ["src/app/app.routes.ts", "src/app/core/auth/services/user.service.ts"],
-        ["src/app/core/auth/auth.component.ts", "src/app/core/auth/services/user.service.ts"],
+        [
+          "src/app/app.config.ts",
+          "src/app/core/auth/services/user.service.ts"
+        ],
+        [
+          "src/app/app.routes.ts",
+          "src/app/core/auth/services/user.service.ts"
+        ],
+        [
+          "src/app/core/auth/auth.component.ts",
+          "src/app/core/auth/services/user.service.ts"
+        ],
         [
           "src/app/core/auth/if-authenticated.directive.ts",
           "src/app/core/auth/services/user.service.ts"
@@ -2728,7 +2741,10 @@
           "src/app/core/interceptors/error.interceptor.ts",
           "src/app/core/auth/services/user.service.ts"
         ],
-        ["src/app/core/layout/header.component.ts", "src/app/core/auth/services/user.service.ts"],
+        [
+          "src/app/core/layout/header.component.ts",
+          "src/app/core/auth/services/user.service.ts"
+        ],
         [
           "src/app/features/article/components/article-comment.component.ts",
           "src/app/core/auth/services/user.service.ts"
