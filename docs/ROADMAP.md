@@ -181,6 +181,8 @@ Delivered in the phase-4-motion pull request; see docs/decisions/0010. Baseline 
 
 ## Phase 5 · Launch
 
+Delivered in the launch pull request: the README (demo GIF recorded on the baseline device with `npm run demo:record`, live link, architecture diagram, limitations), decision records 0011–0016 with an index of one-line answers (docs/decisions/README.md), an accessibility suite (axe WCAG 2.2 AA scan of every view, keyboard-only run), and deploys to GitHub Pages on every merge to `main` (chosen by Arcadia).
+
 **Goal:** a reviewer understands the product and the engineering in five minutes.
 
 **Deliverables**

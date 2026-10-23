@@ -7,7 +7,7 @@
 
 - The contract lives in `packages/contracts` as zod schemas; the TypeScript types are inferred from them. A JSON result entering the app goes through `parseAnalysisResult`, which validates the shape and then the cross-references (unique IDs, no dangling edges or regions).
 - We use `zod/mini` imported as `import * as z`, because the classic build put about 430 kB of locales into the initial bundle.
-- Edge direction: `sourceId` depends on `targetId`. Dependants of a node are the sources of its incoming edges.
+- Edge direction: `sourceId` depends on `targetId`. Dependants of a node are the sources of its incoming edges. Why: docs/decisions/0016.
 - IDs come only from the analysed code, never from counters or timestamps:
   - node: the file path, normalised relative to the project root (`src/app/core/auth.service.ts`);
   - region: `kind:rootPath` (`lazy-route:src/app/features/checkout`);

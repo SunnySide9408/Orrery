@@ -1,6 +1,6 @@
 # 0003. Renderer boundary and deterministic layout
 
-- Status: accepted
+- Status: accepted; the drawing details were later replaced (see "Later changes" below)
 - Date: 2026-10-23
 
 ## Decision
@@ -22,3 +22,12 @@ A typed boundary keeps the scene swappable and testable: the explorer's tests us
 Node labels are created for every node up front. That is fine at 40 nodes; at a few hundred it should become label pooling or semantic zoom (Phase 4).
 
 Update, Phase 1: each frame, labels that would overlap a label of higher priority are hidden (regions first, then the focused node, the hovered node, and larger planets). The inspector's width is passed in with `setRightInset`, so the camera frames the focus in the part of the screen the panel leaves free.
+
+## Later changes
+
+The boundary, the lifecycle and the zoneless frame loop above still hold. Two drawing details were replaced:
+
+- One `InstancedMesh` per kind became one instanced shader mesh for all planets, plus one for atmospheres and one for rings (docs/decisions/0009).
+- `CSS2DRenderer` labels became a pool of 80 HTML labels placed in screen space, with semantic zoom (0010). That is the label pooling the Limits section asked for.
+
+The layout is explained in full in 0015, and Three.js itself in 0011.
