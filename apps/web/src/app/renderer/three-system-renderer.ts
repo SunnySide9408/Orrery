@@ -240,7 +240,8 @@ export class ThreeSystemRenderer implements SystemRenderer {
       .normalize()
       .add(new Vector3(0, 0.5, 0))
       .normalize();
-    const position = target.clone().add(direction.multiplyScalar(this.fitDistance(reach)));
+    // Extra room for the labels, which stick out beyond the planets they name.
+    const position = target.clone().add(direction.multiplyScalar(this.fitDistance(reach * 1.3)));
     this.moveCamera(target, position, this.reducedMotion);
   }
 

@@ -112,7 +112,7 @@ describe('Shell', () => {
     const row = [...document.querySelectorAll('tbody tr')].find((tr) =>
       tr.querySelector('th')?.textContent?.includes('AuthService'),
     )!;
-    const usedBy = row.querySelectorAll('td')[3]!.textContent!.trim();
+    const usedBy = row.querySelector('[data-column="used-by"]')!.textContent!.trim();
     expect(usedBy).toBe(String(sample.index.dependantsOf(AUTH).length));
     expect(row.querySelector('[aria-current="true"]')).not.toBeNull();
     expect(text(harness)).toContain(`Dependants (${usedBy})`);

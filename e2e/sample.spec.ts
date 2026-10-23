@@ -44,7 +44,7 @@ test('open the sample, search, select, and the inspector shows the right facts',
     'aria-current',
     'true',
   );
-  await expect(row.getByRole('cell').nth(3)).toHaveText(String(dependants));
+  await expect(row.locator('[data-column="used-by"]')).toHaveText(String(dependants));
   await expect(inspector).toContainText(`Dependants (${dependants})`);
 
   // Escape goes back to the overview.

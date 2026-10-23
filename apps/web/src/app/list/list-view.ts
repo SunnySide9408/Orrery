@@ -56,9 +56,17 @@ interface RegionGroup {
                 <tr>
                   <th scope="col" class="py-1 pr-3 font-medium">Name</th>
                   <th scope="col" class="py-1 pr-3 font-medium">Kind</th>
-                  <th scope="col" class="hidden py-1 pr-3 font-medium md:table-cell">Path</th>
+                  <th
+                    scope="col"
+                    class="hidden py-1 pr-3 font-medium xl:table-cell"
+                    [class.md:table-cell]="!state.focus()"
+                  >
+                    Path
+                  </th>
                   <th scope="col" class="py-1 pr-3 text-right font-medium">Lines</th>
-                  <th scope="col" class="py-1 pr-3 text-right font-medium">Used by</th>
+                  <th scope="col" class="py-1 pr-3 text-right font-medium whitespace-nowrap">
+                    Used by
+                  </th>
                   <th scope="col" class="py-1 pr-3 text-right font-medium">Imports</th>
                   <th scope="col" class="py-1 text-right font-medium">Specs</th>
                 </tr>
@@ -85,14 +93,17 @@ interface RegionGroup {
                       {{ row.kindLabel }}
                     </td>
                     <td
-                      class="hidden py-1 pr-3 font-mono text-xs whitespace-nowrap text-slate-300 md:table-cell"
+                      class="hidden py-1 pr-3 font-mono text-xs whitespace-nowrap text-slate-300 xl:table-cell"
+                      [class.md:table-cell]="!state.focus()"
                     >
                       <span [title]="row.node.path">{{ row.shortPath }}</span>
                     </td>
                     <td class="py-1 pr-3 text-right tabular-nums">
                       {{ row.node.metrics.linesOfCode }}
                     </td>
-                    <td class="py-1 pr-3 text-right tabular-nums">{{ row.dependants }}</td>
+                    <td class="py-1 pr-3 text-right tabular-nums" data-column="used-by">
+                      {{ row.dependants }}
+                    </td>
                     <td class="py-1 pr-3 text-right tabular-nums">{{ row.dependencies }}</td>
                     <td class="py-1 text-right tabular-nums">{{ row.moons || '' }}</td>
                   </tr>
