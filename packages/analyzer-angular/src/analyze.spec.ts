@@ -224,7 +224,10 @@ describe('analyzeAngularProject', () => {
       'import',
       'standalone-import',
     ]);
-    expect(edgeKinds('core/header.component.ts', 'core/auth.service.ts')).toEqual(['import']);
+    expect(edgeKinds('core/header.component.ts', 'core/auth.service.ts')).toEqual([
+      'import',
+      'inject',
+    ]);
     expect(edgeKinds('core/auth.service.ts', 'core/user.model.ts')).toEqual(['import']);
   });
 
@@ -267,5 +270,134 @@ describe('analyzeAngularProject', () => {
       files: [...files].reverse(),
     });
     expect(JSON.stringify(again)).toBe(JSON.stringify(result));
+  });
+});
+
+describe('dependency injection', () => {
+  const di = analyzeAngularProject({
+    projectName: 'di-app',
+    ref: null,
+    createdAt: '2026-10-23T00:00:00.000Z',
+    files: [
+      {
+        path: 'src/app/api.service.ts',
+        text: `import { Injectable } from '@angular/core';
+@Injectable({ providedIn: 'root' })
+export class ApiService {}`,
+      },
+      {
+        path: 'src/app/tokens.ts',
+        text: `import { InjectionToken } from '@angular/core';
+export const API_URL = new InjectionToken<string>('API_URL');`,
+      },
+      {
+        path: 'src/app/cart.store.ts',
+        text: `import { Injectable, Inject } from '@angular/core';
+import { API_URL } from './tokens';
+import { ApiService } from './api.service';
+@Injectable()
+export class CartStore {
+  constructor(
+    private readonly api: ApiService,
+    @Inject(API_URL) private readonly url: string,
+    private readonly items: Array<string>,
+  ) {}
+}`,
+      },
+      {
+        path: 'src/app/cart.component.ts',
+        text: `import { Component, inject as use } from '@angular/core';
+import { CartStore } from './cart.store';
+import { Logger } from './logger';
+@Component({ selector: 'app-cart', template: '', providers: [CartStore, { provide: Logger, useValue: console }] })
+export class CartComponent {
+  readonly store = use(CartStore);
+}`,
+      },
+      {
+        path: 'src/app/logger.ts',
+        text: `export class Logger {}`,
+      },
+      {
+        path: 'src/app/app.config.ts',
+        text: `import { ApplicationConfig } from '@angular/core';
+import { provideHttpClient } from '@angular/common/http';
+import { API_URL } from './tokens';
+export const appConfig: ApplicationConfig = {
+  providers: [provideHttpClient(), { provide: API_URL, useValue: '/api' }],
+};`,
+      },
+      {
+        path: 'src/app/app.routes.ts',
+        text: `import { Routes } from '@angular/router';
+import { Logger } from './logger';
+export const routes: Routes = [
+  { path: 'cart', providers: [Logger], loadComponent: () => import('./cart.component') },
+];`,
+      },
+      {
+        path: 'src/app/cart.component.spec.ts',
+        text: `import { TestBed } from '@angular/core/testing';
+import { CartStore } from './cart.store';
+TestBed.configureTestingModule({ providers: [CartStore] });`,
+      },
+    ],
+  });
+  const kinds = (source: string, target: string) =>
+    di.graph.edges
+      .filter((e) => e.sourceId === `src/app/${source}` && e.targetId === `src/app/${target}`)
+      .map((e) => e.kind)
+      .sort();
+  const providers = (path: string) =>
+    di.graph.nodes.find((n) => n.path === `src/app/${path}`)?.providers;
+
+  it('adds inject edges for inject(), aliased or not, with the line as evidence', () => {
+    expect(kinds('cart.component.ts', 'cart.store.ts')).toEqual(['import', 'inject']);
+    const edge = di.graph.edges.find(
+      (e) => e.id === 'inject:src/app/cart.component.ts->src/app/cart.store.ts',
+    );
+    expect(edge?.evidence).toEqual([{ path: 'src/app/cart.component.ts', line: 6 }]);
+  });
+
+  it('adds inject edges for constructor parameters and @Inject tokens', () => {
+    expect(kinds('cart.store.ts', 'api.service.ts')).toEqual(['import', 'inject']);
+    expect(kinds('cart.store.ts', 'tokens.ts')).toEqual(['import', 'inject']);
+  });
+
+  it('records where each injectable is provided, and in which scope', () => {
+    expect(providers('api.service.ts')).toEqual([
+      { scope: 'root', location: { path: 'src/app/api.service.ts', line: 2 } },
+    ]);
+    // Test modules are not counted.
+    expect(providers('cart.store.ts')).toEqual([
+      { scope: 'component', location: { path: 'src/app/cart.component.ts', line: 4 } },
+    ]);
+    expect(providers('logger.ts')).toEqual([
+      { scope: 'route', location: { path: 'src/app/app.routes.ts', line: 4 } },
+      { scope: 'component', location: { path: 'src/app/cart.component.ts', line: 4 } },
+    ]);
+    expect(providers('tokens.ts')).toEqual([
+      { scope: 'application', location: { path: 'src/app/app.config.ts', line: 5 } },
+    ]);
+  });
+
+  it('leaves files without a known provider unmarked', () => {
+    expect(providers('cart.component.ts')).toBeUndefined();
+  });
+});
+
+describe('findings', () => {
+  it('are computed from the graph and stored in the result', () => {
+    const many = Array.from({ length: 10 }, (_, i) => ({
+      path: `src/app/user${i}.ts`,
+      text: `import { AuthService } from './auth.service';\nexport const u${i} = AuthService;`,
+    }));
+    const analysed = analyzeAngularProject({
+      projectName: 'fan-in',
+      ref: null,
+      createdAt: '2026-10-23T00:00:00.000Z',
+      files: [{ path: 'src/app/auth.service.ts', text: 'export class AuthService {}' }, ...many],
+    });
+    expect(analysed.findings.map((f) => f.id)).toEqual(['high-fan-in:src/app/auth.service.ts']);
   });
 });

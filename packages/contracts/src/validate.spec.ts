@@ -73,6 +73,7 @@ describe('parseAnalysisResult', () => {
       explanation: 'x',
       rule: 'fan-in above threshold',
       threshold: 10,
+      limits: 'x',
       evidencePaths: [],
     });
     expect(() => parseAnalysisResult(input)).toThrow(/unknown node "missing.ts"/);

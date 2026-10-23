@@ -28,14 +28,30 @@ export const NODE_KINDS = [
   'other',
 ] as const;
 
-/** `inject` and `renders` are planned for Phase 3 and later; adding a kind is a minor change. */
-export const EDGE_KINDS = ['import', 'standalone-import', 'lazy-route'] as const;
+/** `renders` (template usage) is planned for later; adding a kind is a minor change. */
+export const EDGE_KINDS = ['import', 'standalone-import', 'lazy-route', 'inject'] as const;
 
 export const REGION_KINDS = ['lazy-route', 'folder', 'library'] as const;
 
 export const FINDING_CATEGORIES = ['cycle', 'high-fan-in', 'high-fan-out'] as const;
 
 export const FINDING_SEVERITIES = ['info', 'warning'] as const;
+
+/**
+ * Where an injectable is made available. `root`, `platform` and `any` come
+ * from `@Injectable({ providedIn })`; the others from a `providers` array in
+ * that kind of place. `application` is a `providers` array outside any
+ * decorator or route, such as `ApplicationConfig`.
+ */
+export const PROVIDER_SCOPES = [
+  'root',
+  'platform',
+  'any',
+  'application',
+  'module',
+  'route',
+  'component',
+] as const;
 
 const id = z.string().check(z.minLength(1));
 
@@ -50,6 +66,12 @@ export const NodeMetricsSchema = z.object({
   linesOfCode: z.int().check(z.nonnegative()),
 });
 
+/** One place that provides a node's class or token to dependency injection. */
+export const ProviderSiteSchema = z.object({
+  scope: z.enum(PROVIDER_SCOPES),
+  location: SourceLocationSchema,
+});
+
 export const GraphNodeSchema = z.object({
   id,
   /** Normalised path from the project root. */
@@ -61,6 +83,8 @@ export const GraphNodeSchema = z.object({
   /** For moons (specs, small helpers): the node they orbit. */
   ownerId: z.optional(id),
   metrics: NodeMetricsSchema,
+  /** Where this file's injectable is provided, sorted by path and line. Absent when none was found. */
+  providers: z.optional(z.array(ProviderSiteSchema)),
 });
 
 export const GraphEdgeSchema = z.object({
@@ -99,7 +123,12 @@ export const FindingSchema = z.object({
   rule: z.string().check(z.minLength(1)),
   /** The threshold used, or null when the rule has none (cycles). */
   threshold: z.nullable(z.number()),
-  /** Each path is a list of node IDs that proves the finding. */
+  /** What the rule cannot see, so the finding is read with the right amount of trust. */
+  limits: z.string().check(z.minLength(1)),
+  /**
+   * Each path is a list of node IDs that proves the finding; each step is an
+   * edge, whose evidence gives the file and line.
+   */
   evidencePaths: z.array(z.array(id).check(z.minLength(1))),
 });
 
@@ -155,9 +184,11 @@ export type EdgeKind = (typeof EDGE_KINDS)[number];
 export type RegionKind = (typeof REGION_KINDS)[number];
 export type FindingCategory = (typeof FINDING_CATEGORIES)[number];
 export type FindingSeverity = (typeof FINDING_SEVERITIES)[number];
+export type ProviderScope = (typeof PROVIDER_SCOPES)[number];
 
 export type SourceLocation = z.infer<typeof SourceLocationSchema>;
 export type NodeMetrics = z.infer<typeof NodeMetricsSchema>;
+export type ProviderSite = z.infer<typeof ProviderSiteSchema>;
 export type GraphNode = z.infer<typeof GraphNodeSchema>;
 export type GraphEdge = z.infer<typeof GraphEdgeSchema>;
 export type Region = z.infer<typeof RegionSchema>;

@@ -9,6 +9,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@orrery/contracts": "0.0.0"
+    "@orrery/contracts": "0.0.0",
+    "@orrery/graph-core": "0.0.0"
   }
 }
