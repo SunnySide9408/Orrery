@@ -13,6 +13,7 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NODE_KINDS } from '@orrery/contracts';
+import { KindMarker } from '../renderer/kind-marker';
 import { KIND_STYLES } from '../renderer/kind-style';
 import { SYSTEM_RENDERER, type SystemRenderer } from '../renderer/system-renderer';
 import { ExplorerState } from '../shell/explorer-state';
@@ -25,7 +26,7 @@ function inspectorInset(): number {
 /** The 3D map. Angular decides what is selected and related; the renderer only draws it. */
 @Component({
   selector: 'app-explorer',
-  imports: [RouterLink],
+  imports: [RouterLink, KindMarker],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'relative block size-full overflow-hidden' },
   template: `
@@ -66,14 +67,16 @@ function inspectorInset(): number {
       aria-label="Legend"
     >
       <ul class="grid grid-cols-2 gap-x-4 gap-y-0.5">
-        @for (kind of legend(); track kind.label) {
-          <li class="flex items-center gap-1.5">
-            <span class="size-2.5 rounded-full" [style.background]="kind.color"></span>
-            {{ kind.label }}
+        @for (kind of legend(); track kind.id) {
+          <li class="flex items-center gap-1.5" [title]="kind.style.familyLabel">
+            <app-kind-marker [kind]="kind.id" />
+            {{ kind.style.label }}
           </li>
         }
       </ul>
-      <p class="mt-1.5 text-slate-300">Planet size: lines of code. Dashed ring: lazy route.</p>
+      <p class="mt-1.5 text-slate-300">
+        Planet size: lines of code. Each region has its own star. Dashed ring: lazy route.
+      </p>
       @if (state.focus(); as f) {
         <p class="mt-1 text-slate-300">
           <span class="text-amber-300">Amber</span> lines: files that depend on it.
@@ -98,7 +101,7 @@ export class Explorer {
   protected readonly legend = computed(() =>
     NODE_KINDS.filter((kind) =>
       this.sample().result.graph.nodes.some((node) => node.kind === kind),
-    ).map((kind) => KIND_STYLES[kind]),
+    ).map((kind) => ({ id: kind, style: KIND_STYLES[kind] })),
   );
 
   /** What the canvas shows, for screen readers. */
