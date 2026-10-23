@@ -4,7 +4,7 @@ Your Angular app, as a living solar system. Orrery is a visual architecture expl
 
 Not deployed yet: run it locally (below). A manual GitHub Pages deploy is ready for when it is (see docs/decisions/0006).
 
-Status: Phase 1 (app shell and one real sample, the Angular RealWorld app, analysed at build time). Exploring your own folder comes in Phase 2.
+Status: Phase 2 (explore your own Angular folder, analysed in the browser). Phase 1 brought the app shell and one real sample, the Angular RealWorld app, analysed at build time.
 
 ![Selecting AuthService lights up its dependants in three lazy features](docs/images/phase-0-authservice.png)
 
@@ -14,6 +14,7 @@ Status: Phase 1 (app shell and one real sample, the Angular RealWorld app, analy
 - Search (press `/`) or click a planet: the inspector lists what it imports and what depends on it, and the map lights up those files.
 - Switch to the **List** view for the same facts as tables, including unresolved imports.
 - Links keep the selection (`?node=…`), and the site works offline after the first visit.
+- **Open a folder** from your computer: Orrery reads its `.ts` and `tsconfig` files as text in a Web Worker and draws the graph. Nothing is uploaded, installed or run. `node_modules`, `dist` and hidden folders are skipped; up to 5,000 source files, 50 MB in total, 1 MB per file. A report lists what was skipped and which imports did not resolve.
 
 Everything is static analysis: "depends on" means a static relationship in the source, not proof that a change will break something.
 
@@ -36,7 +37,7 @@ npm start          # http://localhost:4200
 | `npm run samples`      | Re-analyse the bundled samples into `apps/web/public`    |
 | `npm run e2e`          | Playwright tests against the production build            |
 
-CI runs all of these on every pull request, checks that the app bundle has no TypeScript compiler in it, and checks that the sample JSON matches what the analyser produces. Deploying to GitHub Pages is a manual workflow for now.
+CI runs all of these on every pull request, checks that the TypeScript compiler is only in the folder-analysis worker, and checks that the sample JSON matches what the analyser produces. Deploying to GitHub Pages is a manual workflow for now.
 
 To analyse another Angular project on the command line: `npm run orrery -- analyze <folder> --out result.json`.
 
@@ -50,7 +51,7 @@ packages/graph-core        adjacency and dependants (impact, cycles, metrics lat
 packages/layout            deterministic orbit layout
 tools/cli                  analyses the bundled samples at build time
 fixtures/shop              hand-written analysis result: 40 nodes, 3 lazy features (tests)
-e2e                        Playwright tests
+e2e                        Playwright tests; e2e/fixtures/tiny-app is a small project to analyse
 docs/decisions             architecture decision records
 ```
 
