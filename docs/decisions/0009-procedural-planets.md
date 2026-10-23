@@ -33,6 +33,8 @@ Planets are drawn as real-looking worlds, generated in a shader, instead of flat
 
 ## Limits and next steps
 
+The first two were done in Phase 4 (docs/decisions/0010): 500 nodes run at the display cap, and lite graphics turn bloom off.
+
 - The fragment shader is the heaviest part of the frame. Phase 4 measures it at 500 nodes and, if needed, lowers detail for planets that are only a few pixels wide.
 - Bloom costs a few full-screen passes. Phase 4's WebGL step-down should switch it off on weak GPUs.
 - If baking the sky fails (a very weak GPU), the plain dark background is used.
