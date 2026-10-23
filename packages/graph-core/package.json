@@ -1,0 +1,14 @@
+{
+  "name": "@orrery/graph-core",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Graph algorithms: adjacency, traversal, impact paths, cycles, metrics. No Angular or Three.js.",
+  "type": "module",
+  "exports": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@orrery/contracts": "0.0.0"
+  }
+}

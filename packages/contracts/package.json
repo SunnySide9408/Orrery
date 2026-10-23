@@ -1,0 +1,14 @@
+{
+  "name": "@orrery/contracts",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Graph, finding, layout and analysis-result types, with runtime validation.",
+  "type": "module",
+  "exports": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zod": "^4.6.7"
+  }
+}
