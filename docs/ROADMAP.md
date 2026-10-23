@@ -125,12 +125,14 @@ Leftovers carried into Phase 1: label overlap in the dense core region; the READ
 
 ## Phase 3 · Insights
 
+Delivered in the phase-3-insights pull request; see docs/decisions/0008.
+
 **Goal:** every finding can be traced to the nodes and paths that support it.
 
 **Deliverables**
 
 - Impact: transitive dependants with paths, revealed in graph-distance waves.
-- Cycles (strongly connected components) and fan-in / fan-out with thresholds **(proposed: flag above the 95th percentile, and never below 10)**.
+- Cycles (strongly connected components) and fan-in / fan-out with thresholds (confirmed 2026-10-23: flag at or above the 95th percentile, and never below 10).
 - DI edges from `inject(X)` and constructor parameters; provider scope shown as a ring or badge.
 - Findings panel: rule, threshold, limits and evidence (file and line) for each.
 
