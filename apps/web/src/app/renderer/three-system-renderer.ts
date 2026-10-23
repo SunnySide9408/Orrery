@@ -127,7 +127,9 @@ export class ThreeSystemRenderer implements SystemRenderer {
     container.appendChild(this.renderer.domElement);
 
     this.labels = new CSS2DRenderer();
-    this.labels.domElement.classList.add('pointer-events-none', 'absolute', 'inset-0');
+    // CSS2DRenderer gives each label a z-index for depth order. `isolate` keeps
+    // those inside this layer, so labels never paint over the app's panels.
+    this.labels.domElement.classList.add('pointer-events-none', 'absolute', 'inset-0', 'isolate');
     container.appendChild(this.labels.domElement);
 
     this.camera = new PerspectiveCamera(50, 1, 0.1, 2000);

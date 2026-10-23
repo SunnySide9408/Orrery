@@ -27,7 +27,7 @@ function inspectorInset(): number {
   selector: 'app-explorer',
   imports: [RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'relative block size-full' },
+  host: { class: 'relative block size-full overflow-hidden' },
   template: `
     <div #scene class="absolute inset-0" aria-hidden="true"></div>
     <p class="sr-only">{{ summary() }}</p>
@@ -46,7 +46,9 @@ function inspectorInset(): number {
         </p>
       </div>
     } @else if (!state.focus()) {
-      <p class="pointer-events-none absolute top-3 left-4 max-w-xs text-sm text-slate-300">
+      <p
+        class="pointer-events-none absolute top-3 left-4 max-w-xs rounded-md bg-slate-950/85 p-2 text-sm text-slate-300"
+      >
         Each ring is a part of the app; dashed rings are lazy-loaded routes. Click a planet to
         inspect it, or try
         <button
@@ -60,7 +62,7 @@ function inspectorInset(): number {
     }
 
     <section
-      class="pointer-events-none absolute bottom-3 left-4 rounded-md bg-slate-950/70 p-2 text-xs text-slate-200"
+      class="pointer-events-none absolute bottom-3 left-4 rounded-md bg-slate-950/85 p-2 text-xs text-slate-200"
       aria-label="Legend"
     >
       <ul class="grid grid-cols-2 gap-x-4 gap-y-0.5">
