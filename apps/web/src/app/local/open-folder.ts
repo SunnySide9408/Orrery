@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FOLDER_LIMITS } from '@orrery/analyzer-angular/select-files';
 import { DEFAULT_SAMPLE_ID } from '../samples/sample-catalog';
@@ -60,16 +60,24 @@ const STAGE_LABELS = {
           >
             Choose a folder
           </button>
-          <input
-            #input
-            type="file"
-            webkitdirectory
-            multiple
-            hidden
-            data-testid="folder-input"
-            (change)="picked(input)"
-          />
+          <!-- A real click on the label opens the browser's own file chooser, so it works where the folder dialog does not. -->
+          <label [class]="linkClass + ' cursor-pointer'">
+            Folder dialog not working? Use the basic picker
+            <input
+              #input
+              type="file"
+              webkitdirectory
+              multiple
+              class="sr-only"
+              data-testid="folder-input"
+              [disabled]="s.status === 'running'"
+              (change)="picked(input)"
+            />
+          </label>
         </div>
+        @if (pickerProblem(); as problem) {
+          <p role="alert" class="text-sm text-amber-200">{{ problem }}</p>
+        }
       </section>
 
       <section aria-live="polite" class="space-y-4">
@@ -209,6 +217,9 @@ export class OpenFolder {
     `${formatCount(count)} ${noun}${count === 1 ? '' : 's'}`;
   protected readonly bytes = formatBytes;
 
+  /** Why the last folder dialog gave nothing, shown next to the buttons. */
+  protected readonly pickerProblem = signal<string | null>(null);
+
   protected readonly stageLabel = computed(() => {
     const state = this.analysis.state();
     return state.status === 'running' ? STAGE_LABELS[state.stage] : '';
@@ -222,25 +233,33 @@ export class OpenFolder {
     'rounded-md border border-slate-600 px-4 py-2 text-slate-100 hover:bg-slate-800 focus-visible:outline-2 focus-visible:outline-sky-400';
 
   protected async pick(input: HTMLInputElement): Promise<void> {
-    const showDirectoryPicker = (window as { showDirectoryPicker?: DirectoryPicker })
-      .showDirectoryPicker;
-    if (!showDirectoryPicker) {
+    this.pickerProblem.set(null);
+    if (!('showDirectoryPicker' in window)) {
       input.click();
       return;
     }
     let handle: FileSystemDirectoryHandle;
     try {
-      handle = await showDirectoryPicker({ mode: 'read' });
+      handle = await (
+        window as unknown as { showDirectoryPicker: DirectoryPicker }
+      ).showDirectoryPicker({ mode: 'read' });
     } catch (error) {
-      // Closing the dialog is not an error. Anything else (blocked by policy) uses the fallback.
-      if (error instanceof DOMException && error.name === 'AbortError') return;
-      input.click();
+      // A closed dialog and a refused permission prompt both arrive as AbortError, and some
+      // embedded browsers refuse the dialog outright. Say so, and point at the basic picker:
+      // opening it from here would need a fresh click, which an awaited dialog has used up.
+      const name = error instanceof DOMException ? error.name : 'Error';
+      this.pickerProblem.set(
+        name === 'AbortError'
+          ? 'No folder was opened. If you did pick one, this browser may not allow folder access: use the basic picker.'
+          : `This browser's folder dialog failed (${name}). Use the basic picker instead.`,
+      );
       return;
     }
     this.analysis.start({ kind: 'handle', name: handle.name, handle });
   }
 
   protected picked(input: HTMLInputElement): void {
+    this.pickerProblem.set(null);
     const list = [...(input.files ?? [])];
     input.value = '';
     if (list.length === 0) return;

@@ -115,6 +115,25 @@ describe('FolderAnalysis', () => {
     });
   });
 
+  it('reports a folder the browser cannot pass to the worker', () => {
+    FakeWorker.prototype.postMessage = function () {
+      throw new DOMException('could not be cloned', 'DataCloneError');
+    };
+    try {
+      analysis.start(source);
+    } finally {
+      FakeWorker.prototype.postMessage = function (this: FakeWorker, message: StartAnalysis) {
+        this.sent.push(message);
+      };
+    }
+    expect(analysis.state()).toEqual({
+      status: 'failed',
+      folderName: 'shop',
+      message: 'DataCloneError: could not be cloned',
+    });
+    expect(FakeWorker.instances[0]!.terminated).toBe(true);
+  });
+
   it('reports a result that fails validation instead of showing it', () => {
     analysis.start(source);
     FakeWorker.instances[0]!.reply({

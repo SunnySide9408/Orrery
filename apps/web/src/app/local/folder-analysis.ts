@@ -72,7 +72,15 @@ export class FolderAnalysis {
       event.preventDefault();
       if (this.worker === worker) this.fail(source.name, event.message || 'The worker stopped.');
     };
-    worker.postMessage({ type: 'start', source } satisfies StartAnalysis);
+    try {
+      worker.postMessage({ type: 'start', source } satisfies StartAnalysis);
+    } catch (error) {
+      // A browser that cannot pass a directory handle to a worker throws DataCloneError here.
+      this.fail(
+        source.name,
+        error instanceof Error ? `${error.name}: ${error.message}` : String(error),
+      );
+    }
   }
 
   /** Stops the running analysis at once: the worker is terminated, not asked to stop. */
