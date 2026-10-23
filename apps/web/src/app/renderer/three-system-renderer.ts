@@ -57,6 +57,13 @@ interface NodeSlot {
   label: CSS2DObject;
 }
 
+/** A label taking part in overlap removal, highest priority first. */
+interface PlacedLabel {
+  object: CSS2DObject;
+  /** Measured once, the first time the label is on screen. */
+  size: { width: number; height: number } | null;
+}
+
 interface Glide {
   start: number;
   fromPosition: Vector3;
@@ -91,6 +98,10 @@ export class ThreeSystemRenderer implements SystemRenderer {
   private pressedAt: { x: number; y: number } | null = null;
 
   private slots = new Map<string, NodeSlot>();
+  private regionLabels: PlacedLabel[] = [];
+  /** Visible node labels in priority order: focused, hovered, then larger planets first. */
+  private nodeLabelOrder: PlacedLabel[] = [];
+  private readonly labelSizes = new WeakMap<CSS2DObject, PlacedLabel>();
   private meshes: InstancedMesh[] = [];
   private edgeLines?: LineSegments;
   private halo?: Mesh;
@@ -102,6 +113,7 @@ export class ThreeSystemRenderer implements SystemRenderer {
   private focusedId: string | null = null;
   private hoveredId: string | null = null;
   private reducedMotion = false;
+  private rightInset = 0;
   private glide: Glide | null = null;
 
   initialize(container: HTMLElement, events: SystemRendererEvents): void {
@@ -115,7 +127,9 @@ export class ThreeSystemRenderer implements SystemRenderer {
     container.appendChild(this.renderer.domElement);
 
     this.labels = new CSS2DRenderer();
-    this.labels.domElement.classList.add('pointer-events-none', 'absolute', 'inset-0');
+    // CSS2DRenderer gives each label a z-index for depth order. `isolate` keeps
+    // those inside this layer, so labels never paint over the app's panels.
+    this.labels.domElement.classList.add('pointer-events-none', 'absolute', 'inset-0', 'isolate');
     container.appendChild(this.labels.domElement);
 
     this.camera = new PerspectiveCamera(50, 1, 0.1, 2000);
@@ -158,6 +172,7 @@ export class ThreeSystemRenderer implements SystemRenderer {
       );
       label.position.set(centre.x, 0, centre.z + position.radius + 1.5);
       this.graphGroup.add(label);
+      this.regionLabels.push(this.placed(label));
     }
     this.extent = Math.max(10, extent);
 
@@ -200,6 +215,7 @@ export class ThreeSystemRenderer implements SystemRenderer {
   focusNode(nodeId: string | null): void {
     this.focusedId = nodeId && this.slots.has(nodeId) ? nodeId : null;
     this.updateHalo();
+    this.applyAppearance();
     if (this.focusedId === null) {
       this.moveCamera(new Vector3(), this.overviewPosition(), this.reducedMotion);
       return;
@@ -224,7 +240,8 @@ export class ThreeSystemRenderer implements SystemRenderer {
       .normalize()
       .add(new Vector3(0, 0.5, 0))
       .normalize();
-    const position = target.clone().add(direction.multiplyScalar(this.fitDistance(reach)));
+    // Extra room for the labels, which stick out beyond the planets they name.
+    const position = target.clone().add(direction.multiplyScalar(this.fitDistance(reach * 1.3)));
     this.moveCamera(target, position, this.reducedMotion);
   }
 
@@ -268,12 +285,23 @@ export class ThreeSystemRenderer implements SystemRenderer {
     this.controls.enableDamping = !enabled;
   }
 
+  setRightInset(pixels: number): void {
+    if (pixels === this.rightInset) return;
+    this.rightInset = pixels;
+    this.resize();
+  }
+
   resize(): void {
     const { clientWidth: width, clientHeight: height } = this.container;
     if (width === 0 || height === 0) return;
     this.renderer.setSize(width, height, false);
     this.labels.setSize(width, height);
-    this.camera.aspect = width / height;
+    // Render a window of a wider virtual view, so its centre sits in the middle
+    // of the part of the screen the inspector does not cover.
+    const inset = Math.min(this.rightInset, width / 2);
+    this.camera.aspect = (width + inset) / height;
+    if (inset > 0) this.camera.setViewOffset(width + inset, height, inset, 0, width, height);
+    else this.camera.clearViewOffset();
     this.camera.updateProjectionMatrix();
   }
 
@@ -308,7 +336,60 @@ export class ThreeSystemRenderer implements SystemRenderer {
     this.halo?.quaternion.copy(this.camera.quaternion);
     this.renderer.render(this.scene, this.camera);
     this.labels.render(this.scene, this.camera);
+    this.declutterLabels();
   };
+
+  /**
+   * Hides labels that would overlap a label of higher priority, in screen
+   * space, after CSS2DRenderer has placed them. Region labels always win, then
+   * the focused node, the hovered node, and bigger planets before smaller ones.
+   * Runs every frame because overlap depends on the camera; it only touches
+   * the few labels that are visible, so the cost stays small.
+   */
+  private declutterLabels(): void {
+    const width = this.container.clientWidth;
+    const height = this.container.clientHeight;
+    const taken: { left: number; top: number; right: number; bottom: number }[] = [];
+    const projected = new Vector3();
+
+    for (const entry of [...this.regionLabels, ...this.nodeLabelOrder]) {
+      const element = entry.object.element;
+      if (!entry.object.visible || element.style.display === 'none') continue;
+      entry.size ??=
+        element.offsetWidth > 0
+          ? { width: element.offsetWidth, height: element.offsetHeight }
+          : null;
+      if (!entry.size) continue;
+
+      entry.object.getWorldPosition(projected).project(this.camera);
+      const x = (projected.x * 0.5 + 0.5) * width;
+      const y = (-projected.y * 0.5 + 0.5) * height;
+      const box = {
+        left: x - entry.size.width / 2 - 2,
+        right: x + entry.size.width / 2 + 2,
+        top: y - entry.size.height / 2 - 1,
+        bottom: y + entry.size.height / 2 + 1,
+      };
+      const overlaps = taken.some(
+        (other) =>
+          box.left < other.right &&
+          box.right > other.left &&
+          box.top < other.bottom &&
+          box.bottom > other.top,
+      );
+      element.style.visibility = overlaps ? 'hidden' : '';
+      if (!overlaps) taken.push(box);
+    }
+  }
+
+  private placed(object: CSS2DObject): PlacedLabel {
+    let entry = this.labelSizes.get(object);
+    if (!entry) {
+      entry = { object, size: null };
+      this.labelSizes.set(object, entry);
+    }
+    return entry;
+  }
 
   private moveCamera(target: Vector3, position: Vector3, instant: boolean): void {
     if (instant) {
@@ -329,13 +410,19 @@ export class ThreeSystemRenderer implements SystemRenderer {
   }
 
   private overviewPosition(): Vector3 {
-    return new Vector3(0, 0.75, 0.66).normalize().multiplyScalar(this.fitDistance(this.extent));
+    // A little margin, so the outer ring labels stay on screen.
+    return new Vector3(0, 0.75, 0.66)
+      .normalize()
+      .multiplyScalar(this.fitDistance(this.extent * 1.08));
   }
 
   /** Camera distance at which a sphere of `radius` fits the narrower side of the view. */
   private fitDistance(radius: number): number {
     const vertical = (this.camera.fov * Math.PI) / 360;
-    const horizontal = Math.atan(Math.tan(vertical) * this.camera.aspect);
+    const { clientWidth: width, clientHeight: height } = this.container;
+    const visibleAspect =
+      height > 0 ? (width - Math.min(this.rightInset, width / 2)) / height : this.camera.aspect;
+    const horizontal = Math.atan(Math.tan(vertical) * visibleAspect);
     // Graph content is mostly flat (orbits lie in a plane), so tan is a closer fit than sin.
     return radius / Math.tan(Math.min(vertical, horizontal));
   }
@@ -359,6 +446,12 @@ export class ThreeSystemRenderer implements SystemRenderer {
       slot.mesh.setColorAt(slot.index, color);
       slot.label.visible = (anyHighlight && lit && visible) || id === this.hoveredId;
     }
+    const rank = (slot: NodeSlot) =>
+      slot.node.id === this.focusedId ? 0 : slot.node.id === this.hoveredId ? 1 : 2;
+    this.nodeLabelOrder = [...this.slots.values()]
+      .filter((slot) => slot.label.visible)
+      .sort((a, b) => rank(a) - rank(b) || b.radius - a.radius || (a.node.id < b.node.id ? -1 : 1))
+      .map((slot) => this.placed(slot.label));
     for (const mesh of this.meshes) {
       mesh.instanceMatrix.needsUpdate = true;
       if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
@@ -428,6 +521,8 @@ export class ThreeSystemRenderer implements SystemRenderer {
       this.disposeObject(child);
     }
     this.slots.clear();
+    this.regionLabels = [];
+    this.nodeLabelOrder = [];
     this.meshes = [];
     this.edgeLines = undefined;
     this.halo = undefined;

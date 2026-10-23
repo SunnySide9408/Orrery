@@ -26,4 +26,28 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test
-      - run: npm run build
+      - run: npm run build:stats
+      - run: npm run check:bundle
+      - run: npx playwright install --with-deps chromium
+      - run: npm run e2e
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-traces
+          path: test-results/
+          retention-days: 7
+
+  samples:
+    # The shipped sample JSON must match what the analyser produces today, so an
+    # analyser change cannot silently leave the live site showing old results.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run samples
+      - name: Sample JSON is up to date
+        run: git diff --exit-code -- apps/web/public/samples || (echo "::error::Run 'npm run samples' and commit the result." && exit 1)

@@ -1,0 +1,2249 @@
+{
+  "schemaVersion": 1,
+  "project": {
+    "name": "Angular RealWorld (Conduit)"
+  },
+  "ref": "dd99ed2cf39c805d719f943c5d7061a5683d98a8",
+  "analyzerVersion": "0.1.0",
+  "createdAt": "2026-05-13T07:06:35.000Z",
+  "graph": {
+    "nodes": [
+      {
+        "id": "src/app/app.component.ts",
+        "path": "src/app/app.component.ts",
+        "name": "AppComponent",
+        "kind": "component",
+        "regionId": "folder:src/app",
+        "metrics": {
+          "linesOfCode": 11
+        }
+      },
+      {
+        "id": "src/app/app.config.ts",
+        "path": "src/app/app.config.ts",
+        "name": "initAuth",
+        "kind": "other",
+        "regionId": "folder:src/app",
+        "metrics": {
+          "linesOfCode": 70
+        }
+      },
+      {
+        "id": "src/app/app.routes.ts",
+        "path": "src/app/app.routes.ts",
+        "name": "app.routes",
+        "kind": "route-config",
+        "regionId": "folder:src/app",
+        "metrics": {
+          "linesOfCode": 59
+        }
+      },
+      {
+        "id": "src/app/core/auth/auth.component.ts",
+        "path": "src/app/core/auth/auth.component.ts",
+        "name": "AuthComponent",
+        "kind": "component",
+        "regionId": "lazy-route:src/app/core/auth",
+        "metrics": {
+          "linesOfCode": 76
+        }
+      },
+      {
+        "id": "src/app/core/auth/if-authenticated.directive.ts",
+        "path": "src/app/core/auth/if-authenticated.directive.ts",
+        "name": "IfAuthenticatedDirective",
+        "kind": "directive",
+        "regionId": "lazy-route:src/app/core/auth",
+        "metrics": {
+          "linesOfCode": 33
+        }
+      },
+      {
+        "id": "src/app/core/auth/services/jwt.service.spec.ts",
+        "path": "src/app/core/auth/services/jwt.service.spec.ts",
+        "name": "jwt.service.spec",
+        "kind": "spec",
+        "regionId": "folder:src/app/core",
+        "ownerId": "src/app/core/auth/services/jwt.service.ts",
+        "metrics": {
+          "linesOfCode": 291
+        }
+      },
+      {
+        "id": "src/app/core/auth/services/jwt.service.ts",
+        "path": "src/app/core/auth/services/jwt.service.ts",
+        "name": "JwtService",
+        "kind": "service",
+        "regionId": "folder:src/app/core",
+        "metrics": {
+          "linesOfCode": 13
+        }
+      },
+      {
+        "id": "src/app/core/auth/services/user.service.spec.ts",
+        "path": "src/app/core/auth/services/user.service.spec.ts",
+        "name": "user.service.spec",
+        "kind": "spec",
+        "regionId": "folder:src/app/core",
+        "ownerId": "src/app/core/auth/services/user.service.ts",
+        "metrics": {
+          "linesOfCode": 330
+        }
+      },
+      {
+        "id": "src/app/core/auth/services/user.service.ts",
+        "path": "src/app/core/auth/services/user.service.ts",
+        "name": "UserService",
+        "kind": "service",
+        "regionId": "folder:src/app/core",
+        "metrics": {
+          "linesOfCode": 158
+        }
+      },
+      {
+        "id": "src/app/core/auth/user.model.ts",
+        "path": "src/app/core/auth/user.model.ts",
+        "name": "user.model",
+        "kind": "other",
+        "regionId": "folder:src/app/core",
+        "metrics": {
+          "linesOfCode": 7
+        }
+      },
+      {
+        "id": "src/app/core/interceptors/api.interceptor.ts",
+        "path": "src/app/core/interceptors/api.interceptor.ts",
+        "name": "apiInterceptor",
+        "kind": "interceptor",
+        "regionId": "folder:src/app/core",
+        "metrics": {
+          "linesOfCode": 5
+        }
+      },
+      {
+        "id": "src/app/core/interceptors/error.interceptor.ts",
+        "path": "src/app/core/interceptors/error.interceptor.ts",
+        "name": "errorInterceptor",
+        "kind": "interceptor",
+        "regionId": "folder:src/app/core",
+        "metrics": {
+          "linesOfCode": 50
+        }
+      },
+      {
+        "id": "src/app/core/interceptors/token.interceptor.ts",
+        "path": "src/app/core/interceptors/token.interceptor.ts",
+        "name": "tokenInterceptor",
+        "kind": "interceptor",
+        "regionId": "folder:src/app/core",
+        "metrics": {
+          "linesOfCode": 12
+        }
+      },
+      {
+        "id": "src/app/core/layout/footer.component.ts",
+        "path": "src/app/core/layout/footer.component.ts",
+        "name": "FooterComponent",
+        "kind": "component",
+        "regionId": "folder:src/app/core",
+        "metrics": {
+          "linesOfCode": 12
+        }
+      },
+      {
+        "id": "src/app/core/layout/header.component.ts",
+        "path": "src/app/core/layout/header.component.ts",
+        "name": "HeaderComponent",
+        "kind": "component",
+        "regionId": "folder:src/app/core",
+        "metrics": {
+          "linesOfCode": 16
+        }
+      },
+      {
+        "id": "src/app/core/models/errors.model.ts",
+        "path": "src/app/core/models/errors.model.ts",
+        "name": "errors.model",
+        "kind": "other",
+        "regionId": "folder:src/app/core",
+        "metrics": {
+          "linesOfCode": 3
+        }
+      },
+      {
+        "id": "src/app/core/models/loading-state.model.ts",
+        "path": "src/app/core/models/loading-state.model.ts",
+        "name": "loading-state.model",
+        "kind": "other",
+        "regionId": "folder:src/app/core",
+        "metrics": {
+          "linesOfCode": 5
+        }
+      },
+      {
+        "id": "src/app/features/article/components/article-comment.component.ts",
+        "path": "src/app/features/article/components/article-comment.component.ts",
+        "name": "ArticleCommentComponent",
+        "kind": "component",
+        "regionId": "lazy-route:src/app/features/article",
+        "metrics": {
+          "linesOfCode": 48
+        }
+      },
+      {
+        "id": "src/app/features/article/components/article-list.component.ts",
+        "path": "src/app/features/article/components/article-list.component.ts",
+        "name": "ArticleListComponent",
+        "kind": "component",
+        "regionId": "lazy-route:src/app/features/article",
+        "metrics": {
+          "linesOfCode": 120
+        }
+      },
+      {
+        "id": "src/app/features/article/components/article-meta.component.ts",
+        "path": "src/app/features/article/components/article-meta.component.ts",
+        "name": "ArticleMetaComponent",
+        "kind": "component",
+        "regionId": "lazy-route:src/app/features/article",
+        "metrics": {
+          "linesOfCode": 29
+        }
+      },
+      {
+        "id": "src/app/features/article/components/article-preview.component.ts",
+        "path": "src/app/features/article/components/article-preview.component.ts",
+        "name": "ArticlePreviewComponent",
+        "kind": "component",
+        "regionId": "lazy-route:src/app/features/article",
+        "metrics": {
+          "linesOfCode": 45
+        }
+      },
+      {
+        "id": "src/app/features/article/components/favorite-button.component.ts",
+        "path": "src/app/features/article/components/favorite-button.component.ts",
+        "name": "FavoriteButtonComponent",
+        "kind": "component",
+        "regionId": "lazy-route:src/app/features/article",
+        "metrics": {
+          "linesOfCode": 73
+        }
+      },
+      {
+        "id": "src/app/features/article/models/article-list-config.model.ts",
+        "path": "src/app/features/article/models/article-list-config.model.ts",
+        "name": "article-list-config.model",
+        "kind": "other",
+        "regionId": "lazy-route:src/app/features/article",
+        "metrics": {
+          "linesOfCode": 10
+        }
+      },
+      {
+        "id": "src/app/features/article/models/article.model.ts",
+        "path": "src/app/features/article/models/article.model.ts",
+        "name": "article.model",
+        "kind": "other",
+        "regionId": "lazy-route:src/app/features/article",
+        "metrics": {
+          "linesOfCode": 13
+        }
+      },
+      {
+        "id": "src/app/features/article/models/comment.model.ts",
+        "path": "src/app/features/article/models/comment.model.ts",
+        "name": "comment.model",
+        "kind": "other",
+        "regionId": "lazy-route:src/app/features/article",
+        "metrics": {
+          "linesOfCode": 7
+        }
+      },
+      {
+        "id": "src/app/features/article/pages/article/article.component.ts",
+        "path": "src/app/features/article/pages/article/article.component.ts",
+        "name": "ArticleComponent",
+        "kind": "component",
+        "regionId": "lazy-route:src/app/features/article",
+        "metrics": {
+          "linesOfCode": 146
+        }
+      },
+      {
+        "id": "src/app/features/article/pages/editor/editor.component.ts",
+        "path": "src/app/features/article/pages/editor/editor.component.ts",
+        "name": "EditorComponent",
+        "kind": "component",
+        "regionId": "lazy-route:src/app/features/article",
+        "metrics": {
+          "linesOfCode": 85
+        }
+      },
+      {
+        "id": "src/app/features/article/pages/home/home.component.ts",
+        "path": "src/app/features/article/pages/home/home.component.ts",
+        "name": "HomeComponent",
+        "kind": "component",
+        "regionId": "lazy-route:src/app/features/article",
+        "metrics": {
+          "linesOfCode": 82
+        }
+      },
+      {
+        "id": "src/app/features/article/services/articles.service.spec.ts",
+        "path": "src/app/features/article/services/articles.service.spec.ts",
+        "name": "articles.service.spec",
+        "kind": "spec",
+        "regionId": "lazy-route:src/app/features/article",
+        "ownerId": "src/app/features/article/services/articles.service.ts",
+        "metrics": {
+          "linesOfCode": 239
+        }
+      },
+      {
+        "id": "src/app/features/article/services/articles.service.ts",
+        "path": "src/app/features/article/services/articles.service.ts",
+        "name": "ArticlesService",
+        "kind": "service",
+        "regionId": "lazy-route:src/app/features/article",
+        "metrics": {
+          "linesOfCode": 44
+        }
+      },
+      {
+        "id": "src/app/features/article/services/comments.service.spec.ts",
+        "path": "src/app/features/article/services/comments.service.spec.ts",
+        "name": "comments.service.spec",
+        "kind": "spec",
+        "regionId": "lazy-route:src/app/features/article",
+        "ownerId": "src/app/features/article/services/comments.service.ts",
+        "metrics": {
+          "linesOfCode": 367
+        }
+      },
+      {
+        "id": "src/app/features/article/services/comments.service.ts",
+        "path": "src/app/features/article/services/comments.service.ts",
+        "name": "CommentsService",
+        "kind": "service",
+        "regionId": "lazy-route:src/app/features/article",
+        "metrics": {
+          "linesOfCode": 22
+        }
+      },
+      {
+        "id": "src/app/features/article/services/tags.service.spec.ts",
+        "path": "src/app/features/article/services/tags.service.spec.ts",
+        "name": "tags.service.spec",
+        "kind": "spec",
+        "regionId": "lazy-route:src/app/features/article",
+        "ownerId": "src/app/features/article/services/tags.service.ts",
+        "metrics": {
+          "linesOfCode": 343
+        }
+      },
+      {
+        "id": "src/app/features/article/services/tags.service.ts",
+        "path": "src/app/features/article/services/tags.service.ts",
+        "name": "TagsService",
+        "kind": "service",
+        "regionId": "lazy-route:src/app/features/article",
+        "metrics": {
+          "linesOfCode": 11
+        }
+      },
+      {
+        "id": "src/app/features/profile/components/follow-button.component.ts",
+        "path": "src/app/features/profile/components/follow-button.component.ts",
+        "name": "FollowButtonComponent",
+        "kind": "component",
+        "regionId": "lazy-route:src/app/features/profile",
+        "metrics": {
+          "linesOfCode": 76
+        }
+      },
+      {
+        "id": "src/app/features/profile/components/profile-articles.component.ts",
+        "path": "src/app/features/profile/components/profile-articles.component.ts",
+        "name": "ProfileArticlesComponent",
+        "kind": "component",
+        "regionId": "lazy-route:src/app/features/profile",
+        "metrics": {
+          "linesOfCode": 40
+        }
+      },
+      {
+        "id": "src/app/features/profile/components/profile-favorites.component.ts",
+        "path": "src/app/features/profile/components/profile-favorites.component.ts",
+        "name": "ProfileFavoritesComponent",
+        "kind": "component",
+        "regionId": "lazy-route:src/app/features/profile",
+        "metrics": {
+          "linesOfCode": 40
+        }
+      },
+      {
+        "id": "src/app/features/profile/models/profile.model.ts",
+        "path": "src/app/features/profile/models/profile.model.ts",
+        "name": "profile.model",
+        "kind": "other",
+        "regionId": "lazy-route:src/app/features/profile",
+        "metrics": {
+          "linesOfCode": 6
+        }
+      },
+      {
+        "id": "src/app/features/profile/pages/profile/profile.component.ts",
+        "path": "src/app/features/profile/pages/profile/profile.component.ts",
+        "name": "ProfileComponent",
+        "kind": "component",
+        "regionId": "lazy-route:src/app/features/profile",
+        "metrics": {
+          "linesOfCode": 59
+        }
+      },
+      {
+        "id": "src/app/features/profile/profile.routes.ts",
+        "path": "src/app/features/profile/profile.routes.ts",
+        "name": "profile.routes",
+        "kind": "route-config",
+        "regionId": "lazy-route:src/app/features/profile",
+        "metrics": {
+          "linesOfCode": 24
+        }
+      },
+      {
+        "id": "src/app/features/profile/services/profile.service.spec.ts",
+        "path": "src/app/features/profile/services/profile.service.spec.ts",
+        "name": "profile.service.spec",
+        "kind": "spec",
+        "regionId": "lazy-route:src/app/features/profile",
+        "ownerId": "src/app/features/profile/services/profile.service.ts",
+        "metrics": {
+          "linesOfCode": 314
+        }
+      },
+      {
+        "id": "src/app/features/profile/services/profile.service.ts",
+        "path": "src/app/features/profile/services/profile.service.ts",
+        "name": "ProfileService",
+        "kind": "service",
+        "regionId": "lazy-route:src/app/features/profile",
+        "metrics": {
+          "linesOfCode": 32
+        }
+      },
+      {
+        "id": "src/app/features/settings/settings.component.ts",
+        "path": "src/app/features/settings/settings.component.ts",
+        "name": "SettingsComponent",
+        "kind": "component",
+        "regionId": "lazy-route:src/app/features/settings",
+        "metrics": {
+          "linesOfCode": 71
+        }
+      },
+      {
+        "id": "src/app/shared/components/list-errors.component.ts",
+        "path": "src/app/shared/components/list-errors.component.ts",
+        "name": "ListErrorsComponent",
+        "kind": "component",
+        "regionId": "folder:src/app/shared",
+        "metrics": {
+          "linesOfCode": 13
+        }
+      },
+      {
+        "id": "src/app/shared/pipes/default-image.pipe.ts",
+        "path": "src/app/shared/pipes/default-image.pipe.ts",
+        "name": "DefaultImagePipe",
+        "kind": "pipe",
+        "regionId": "folder:src/app/shared",
+        "metrics": {
+          "linesOfCode": 7
+        }
+      },
+      {
+        "id": "src/app/shared/pipes/markdown.pipe.ts",
+        "path": "src/app/shared/pipes/markdown.pipe.ts",
+        "name": "MarkdownPipe",
+        "kind": "pipe",
+        "regionId": "folder:src/app/shared",
+        "metrics": {
+          "linesOfCode": 13
+        }
+      },
+      {
+        "id": "src/main.ts",
+        "path": "src/main.ts",
+        "name": "main",
+        "kind": "other",
+        "regionId": "folder:src/app",
+        "metrics": {
+          "linesOfCode": 4
+        }
+      },
+      {
+        "id": "src/test-setup.ts",
+        "path": "src/test-setup.ts",
+        "name": "test-setup",
+        "kind": "other",
+        "regionId": "folder:src/app",
+        "metrics": {
+          "linesOfCode": 14
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "import:src/app/app.component.ts->src/app/core/layout/footer.component.ts",
+        "sourceId": "src/app/app.component.ts",
+        "targetId": "src/app/core/layout/footer.component.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/app.component.ts",
+            "line": 4
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/app.component.ts->src/app/core/layout/header.component.ts",
+        "sourceId": "src/app/app.component.ts",
+        "targetId": "src/app/core/layout/header.component.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/app.component.ts",
+            "line": 2
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/app.config.ts->src/app/app.routes.ts",
+        "sourceId": "src/app/app.config.ts",
+        "targetId": "src/app/app.routes.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/app.config.ts",
+            "line": 4
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/app.config.ts->src/app/core/auth/services/jwt.service.ts",
+        "sourceId": "src/app/app.config.ts",
+        "targetId": "src/app/core/auth/services/jwt.service.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/app.config.ts",
+            "line": 6
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/app.config.ts->src/app/core/auth/services/user.service.ts",
+        "sourceId": "src/app/app.config.ts",
+        "targetId": "src/app/core/auth/services/user.service.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/app.config.ts",
+            "line": 7
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/app.config.ts->src/app/core/auth/user.model.ts",
+        "sourceId": "src/app/app.config.ts",
+        "targetId": "src/app/core/auth/user.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/app.config.ts",
+            "line": 12
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/app.config.ts->src/app/core/interceptors/api.interceptor.ts",
+        "sourceId": "src/app/app.config.ts",
+        "targetId": "src/app/core/interceptors/api.interceptor.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/app.config.ts",
+            "line": 8
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/app.config.ts->src/app/core/interceptors/error.interceptor.ts",
+        "sourceId": "src/app/app.config.ts",
+        "targetId": "src/app/core/interceptors/error.interceptor.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/app.config.ts",
+            "line": 10
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/app.config.ts->src/app/core/interceptors/token.interceptor.ts",
+        "sourceId": "src/app/app.config.ts",
+        "targetId": "src/app/core/interceptors/token.interceptor.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/app.config.ts",
+            "line": 9
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/app.routes.ts->src/app/core/auth/services/user.service.ts",
+        "sourceId": "src/app/app.routes.ts",
+        "targetId": "src/app/core/auth/services/user.service.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/app.routes.ts",
+            "line": 3
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/core/auth/auth.component.ts->src/app/core/auth/services/user.service.ts",
+        "sourceId": "src/app/core/auth/auth.component.ts",
+        "targetId": "src/app/core/auth/services/user.service.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/core/auth/auth.component.ts",
+            "line": 6
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/core/auth/auth.component.ts->src/app/core/models/errors.model.ts",
+        "sourceId": "src/app/core/auth/auth.component.ts",
+        "targetId": "src/app/core/models/errors.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/core/auth/auth.component.ts",
+            "line": 5
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/core/auth/auth.component.ts->src/app/shared/components/list-errors.component.ts",
+        "sourceId": "src/app/core/auth/auth.component.ts",
+        "targetId": "src/app/shared/components/list-errors.component.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/core/auth/auth.component.ts",
+            "line": 4
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/core/auth/if-authenticated.directive.ts->src/app/core/auth/services/user.service.ts",
+        "sourceId": "src/app/core/auth/if-authenticated.directive.ts",
+        "targetId": "src/app/core/auth/services/user.service.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/core/auth/if-authenticated.directive.ts",
+            "line": 2
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/core/auth/services/jwt.service.spec.ts->src/app/core/auth/services/jwt.service.ts",
+        "sourceId": "src/app/core/auth/services/jwt.service.spec.ts",
+        "targetId": "src/app/core/auth/services/jwt.service.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/core/auth/services/jwt.service.spec.ts",
+            "line": 6
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/core/auth/services/user.service.spec.ts->src/app/core/auth/services/jwt.service.ts",
+        "sourceId": "src/app/core/auth/services/user.service.spec.ts",
+        "targetId": "src/app/core/auth/services/jwt.service.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/core/auth/services/user.service.spec.ts",
+            "line": 10
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/core/auth/services/user.service.spec.ts->src/app/core/auth/services/user.service.ts",
+        "sourceId": "src/app/core/auth/services/user.service.spec.ts",
+        "targetId": "src/app/core/auth/services/user.service.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/core/auth/services/user.service.spec.ts",
+            "line": 9
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/core/auth/services/user.service.spec.ts->src/app/core/auth/user.model.ts",
+        "sourceId": "src/app/core/auth/services/user.service.spec.ts",
+        "targetId": "src/app/core/auth/user.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/core/auth/services/user.service.spec.ts",
+            "line": 11
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/core/auth/services/user.service.ts->src/app/core/auth/services/jwt.service.ts",
+        "sourceId": "src/app/core/auth/services/user.service.ts",
+        "targetId": "src/app/core/auth/services/jwt.service.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/core/auth/services/user.service.ts",
+            "line": 4
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/core/auth/services/user.service.ts->src/app/core/auth/user.model.ts",
+        "sourceId": "src/app/core/auth/services/user.service.ts",
+        "targetId": "src/app/core/auth/user.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/core/auth/services/user.service.ts",
+            "line": 7
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/core/interceptors/error.interceptor.ts->src/app/core/auth/services/user.service.ts",
+        "sourceId": "src/app/core/interceptors/error.interceptor.ts",
+        "targetId": "src/app/core/auth/services/user.service.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/core/interceptors/error.interceptor.ts",
+            "line": 5
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/core/interceptors/token.interceptor.ts->src/app/core/auth/services/jwt.service.ts",
+        "sourceId": "src/app/core/interceptors/token.interceptor.ts",
+        "targetId": "src/app/core/auth/services/jwt.service.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/core/interceptors/token.interceptor.ts",
+            "line": 3
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/core/layout/header.component.ts->src/app/core/auth/services/user.service.ts",
+        "sourceId": "src/app/core/layout/header.component.ts",
+        "targetId": "src/app/core/auth/services/user.service.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/core/layout/header.component.ts",
+            "line": 2
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/core/layout/header.component.ts->src/app/shared/pipes/default-image.pipe.ts",
+        "sourceId": "src/app/core/layout/header.component.ts",
+        "targetId": "src/app/shared/pipes/default-image.pipe.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/core/layout/header.component.ts",
+            "line": 5
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/components/article-comment.component.ts->src/app/core/auth/services/user.service.ts",
+        "sourceId": "src/app/features/article/components/article-comment.component.ts",
+        "targetId": "src/app/core/auth/services/user.service.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/components/article-comment.component.ts",
+            "line": 2
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/components/article-comment.component.ts->src/app/core/auth/user.model.ts",
+        "sourceId": "src/app/features/article/components/article-comment.component.ts",
+        "targetId": "src/app/core/auth/user.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/components/article-comment.component.ts",
+            "line": 3
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/components/article-comment.component.ts->src/app/features/article/models/comment.model.ts",
+        "sourceId": "src/app/features/article/components/article-comment.component.ts",
+        "targetId": "src/app/features/article/models/comment.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/components/article-comment.component.ts",
+            "line": 6
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/components/article-comment.component.ts->src/app/shared/pipes/default-image.pipe.ts",
+        "sourceId": "src/app/features/article/components/article-comment.component.ts",
+        "targetId": "src/app/shared/pipes/default-image.pipe.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/components/article-comment.component.ts",
+            "line": 8
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/components/article-list.component.ts->src/app/core/models/loading-state.model.ts",
+        "sourceId": "src/app/features/article/components/article-list.component.ts",
+        "targetId": "src/app/core/models/loading-state.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/components/article-list.component.ts",
+            "line": 19
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/components/article-list.component.ts->src/app/features/article/components/article-preview.component.ts",
+        "sourceId": "src/app/features/article/components/article-list.component.ts",
+        "targetId": "src/app/features/article/components/article-preview.component.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/components/article-list.component.ts",
+            "line": 16
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/components/article-list.component.ts->src/app/features/article/models/article-list-config.model.ts",
+        "sourceId": "src/app/features/article/components/article-list.component.ts",
+        "targetId": "src/app/features/article/models/article-list-config.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/components/article-list.component.ts",
+            "line": 14
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/components/article-list.component.ts->src/app/features/article/models/article.model.ts",
+        "sourceId": "src/app/features/article/components/article-list.component.ts",
+        "targetId": "src/app/features/article/models/article.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/components/article-list.component.ts",
+            "line": 15
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/components/article-list.component.ts->src/app/features/article/services/articles.service.ts",
+        "sourceId": "src/app/features/article/components/article-list.component.ts",
+        "targetId": "src/app/features/article/services/articles.service.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/components/article-list.component.ts",
+            "line": 13
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/components/article-meta.component.ts->src/app/features/article/models/article.model.ts",
+        "sourceId": "src/app/features/article/components/article-meta.component.ts",
+        "targetId": "src/app/features/article/models/article.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/components/article-meta.component.ts",
+            "line": 2
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/components/article-meta.component.ts->src/app/shared/pipes/default-image.pipe.ts",
+        "sourceId": "src/app/features/article/components/article-meta.component.ts",
+        "targetId": "src/app/shared/pipes/default-image.pipe.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/components/article-meta.component.ts",
+            "line": 5
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/components/article-preview.component.ts->src/app/features/article/components/article-meta.component.ts",
+        "sourceId": "src/app/features/article/components/article-preview.component.ts",
+        "targetId": "src/app/features/article/components/article-meta.component.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/components/article-preview.component.ts",
+            "line": 3
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/components/article-preview.component.ts->src/app/features/article/components/favorite-button.component.ts",
+        "sourceId": "src/app/features/article/components/article-preview.component.ts",
+        "targetId": "src/app/features/article/components/favorite-button.component.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/components/article-preview.component.ts",
+            "line": 6
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/components/article-preview.component.ts->src/app/features/article/models/article.model.ts",
+        "sourceId": "src/app/features/article/components/article-preview.component.ts",
+        "targetId": "src/app/features/article/models/article.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/components/article-preview.component.ts",
+            "line": 2
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/components/favorite-button.component.ts->src/app/core/auth/services/user.service.ts",
+        "sourceId": "src/app/features/article/components/favorite-button.component.ts",
+        "targetId": "src/app/core/auth/services/user.service.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/components/favorite-button.component.ts",
+            "line": 15
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/components/favorite-button.component.ts->src/app/features/article/models/article.model.ts",
+        "sourceId": "src/app/features/article/components/favorite-button.component.ts",
+        "targetId": "src/app/features/article/models/article.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/components/favorite-button.component.ts",
+            "line": 16
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/components/favorite-button.component.ts->src/app/features/article/services/articles.service.ts",
+        "sourceId": "src/app/features/article/components/favorite-button.component.ts",
+        "targetId": "src/app/features/article/services/articles.service.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/components/favorite-button.component.ts",
+            "line": 14
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/models/article.model.ts->src/app/features/profile/models/profile.model.ts",
+        "sourceId": "src/app/features/article/models/article.model.ts",
+        "targetId": "src/app/features/profile/models/profile.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/models/article.model.ts",
+            "line": 1
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/models/comment.model.ts->src/app/features/profile/models/profile.model.ts",
+        "sourceId": "src/app/features/article/models/comment.model.ts",
+        "targetId": "src/app/features/profile/models/profile.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/models/comment.model.ts",
+            "line": 1
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/pages/article/article.component.ts->src/app/core/auth/if-authenticated.directive.ts",
+        "sourceId": "src/app/features/article/pages/article/article.component.ts",
+        "targetId": "src/app/core/auth/if-authenticated.directive.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/article/article.component.ts",
+            "line": 17
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/pages/article/article.component.ts->src/app/core/auth/services/user.service.ts",
+        "sourceId": "src/app/features/article/pages/article/article.component.ts",
+        "targetId": "src/app/core/auth/services/user.service.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/article/article.component.ts",
+            "line": 8
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/pages/article/article.component.ts->src/app/core/auth/user.model.ts",
+        "sourceId": "src/app/features/article/pages/article/article.component.ts",
+        "targetId": "src/app/core/auth/user.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/article/article.component.ts",
+            "line": 4
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/pages/article/article.component.ts->src/app/core/models/errors.model.ts",
+        "sourceId": "src/app/features/article/pages/article/article.component.ts",
+        "targetId": "src/app/core/models/errors.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/article/article.component.ts",
+            "line": 18
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/pages/article/article.component.ts->src/app/features/article/components/article-comment.component.ts",
+        "sourceId": "src/app/features/article/pages/article/article.component.ts",
+        "targetId": "src/app/features/article/components/article-comment.component.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/article/article.component.ts",
+            "line": 13
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/pages/article/article.component.ts->src/app/features/article/components/article-meta.component.ts",
+        "sourceId": "src/app/features/article/pages/article/article.component.ts",
+        "targetId": "src/app/features/article/components/article-meta.component.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/article/article.component.ts",
+            "line": 9
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/pages/article/article.component.ts->src/app/features/article/components/favorite-button.component.ts",
+        "sourceId": "src/app/features/article/pages/article/article.component.ts",
+        "targetId": "src/app/features/article/components/favorite-button.component.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/article/article.component.ts",
+            "line": 21
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/pages/article/article.component.ts->src/app/features/article/models/article.model.ts",
+        "sourceId": "src/app/features/article/pages/article/article.component.ts",
+        "targetId": "src/app/features/article/models/article.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/article/article.component.ts",
+            "line": 5
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/pages/article/article.component.ts->src/app/features/article/models/comment.model.ts",
+        "sourceId": "src/app/features/article/pages/article/article.component.ts",
+        "targetId": "src/app/features/article/models/comment.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/article/article.component.ts",
+            "line": 16
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/pages/article/article.component.ts->src/app/features/article/services/articles.service.ts",
+        "sourceId": "src/app/features/article/pages/article/article.component.ts",
+        "targetId": "src/app/features/article/services/articles.service.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/article/article.component.ts",
+            "line": 6
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/pages/article/article.component.ts->src/app/features/article/services/comments.service.ts",
+        "sourceId": "src/app/features/article/pages/article/article.component.ts",
+        "targetId": "src/app/features/article/services/comments.service.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/article/article.component.ts",
+            "line": 7
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/pages/article/article.component.ts->src/app/features/profile/components/follow-button.component.ts",
+        "sourceId": "src/app/features/article/pages/article/article.component.ts",
+        "targetId": "src/app/features/profile/components/follow-button.component.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/article/article.component.ts",
+            "line": 22
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/pages/article/article.component.ts->src/app/features/profile/models/profile.model.ts",
+        "sourceId": "src/app/features/article/pages/article/article.component.ts",
+        "targetId": "src/app/features/profile/models/profile.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/article/article.component.ts",
+            "line": 19
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/pages/article/article.component.ts->src/app/shared/components/list-errors.component.ts",
+        "sourceId": "src/app/features/article/pages/article/article.component.ts",
+        "targetId": "src/app/shared/components/list-errors.component.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/article/article.component.ts",
+            "line": 12
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/pages/article/article.component.ts->src/app/shared/pipes/default-image.pipe.ts",
+        "sourceId": "src/app/features/article/pages/article/article.component.ts",
+        "targetId": "src/app/shared/pipes/default-image.pipe.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/article/article.component.ts",
+            "line": 23
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/pages/article/article.component.ts->src/app/shared/pipes/markdown.pipe.ts",
+        "sourceId": "src/app/features/article/pages/article/article.component.ts",
+        "targetId": "src/app/shared/pipes/markdown.pipe.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/article/article.component.ts",
+            "line": 11
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/pages/editor/editor.component.ts->src/app/core/auth/services/user.service.ts",
+        "sourceId": "src/app/features/article/pages/editor/editor.component.ts",
+        "targetId": "src/app/core/auth/services/user.service.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/editor/editor.component.ts",
+            "line": 7
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/pages/editor/editor.component.ts->src/app/core/models/errors.model.ts",
+        "sourceId": "src/app/features/article/pages/editor/editor.component.ts",
+        "targetId": "src/app/core/models/errors.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/editor/editor.component.ts",
+            "line": 5
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/pages/editor/editor.component.ts->src/app/features/article/services/articles.service.ts",
+        "sourceId": "src/app/features/article/pages/editor/editor.component.ts",
+        "targetId": "src/app/features/article/services/articles.service.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/editor/editor.component.ts",
+            "line": 6
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/pages/editor/editor.component.ts->src/app/shared/components/list-errors.component.ts",
+        "sourceId": "src/app/features/article/pages/editor/editor.component.ts",
+        "targetId": "src/app/shared/components/list-errors.component.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/editor/editor.component.ts",
+            "line": 8
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/pages/home/home.component.ts->src/app/core/auth/if-authenticated.directive.ts",
+        "sourceId": "src/app/features/article/pages/home/home.component.ts",
+        "targetId": "src/app/core/auth/if-authenticated.directive.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/home/home.component.ts",
+            "line": 11
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/pages/home/home.component.ts->src/app/core/auth/services/user.service.ts",
+        "sourceId": "src/app/features/article/pages/home/home.component.ts",
+        "targetId": "src/app/core/auth/services/user.service.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/home/home.component.ts",
+            "line": 9
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/pages/home/home.component.ts->src/app/features/article/components/article-list.component.ts",
+        "sourceId": "src/app/features/article/pages/home/home.component.ts",
+        "targetId": "src/app/features/article/components/article-list.component.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/home/home.component.ts",
+            "line": 6
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/pages/home/home.component.ts->src/app/features/article/models/article-list-config.model.ts",
+        "sourceId": "src/app/features/article/pages/home/home.component.ts",
+        "targetId": "src/app/features/article/models/article-list-config.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/home/home.component.ts",
+            "line": 4
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/pages/home/home.component.ts->src/app/features/article/services/tags.service.ts",
+        "sourceId": "src/app/features/article/pages/home/home.component.ts",
+        "targetId": "src/app/features/article/services/tags.service.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/home/home.component.ts",
+            "line": 3
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/services/articles.service.spec.ts->src/app/features/article/models/article-list-config.model.ts",
+        "sourceId": "src/app/features/article/services/articles.service.spec.ts",
+        "targetId": "src/app/features/article/models/article-list-config.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/services/articles.service.spec.ts",
+            "line": 10
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/services/articles.service.spec.ts->src/app/features/article/models/article.model.ts",
+        "sourceId": "src/app/features/article/services/articles.service.spec.ts",
+        "targetId": "src/app/features/article/models/article.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/services/articles.service.spec.ts",
+            "line": 9
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/services/articles.service.spec.ts->src/app/features/article/services/articles.service.ts",
+        "sourceId": "src/app/features/article/services/articles.service.spec.ts",
+        "targetId": "src/app/features/article/services/articles.service.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/services/articles.service.spec.ts",
+            "line": 8
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/services/articles.service.ts->src/app/features/article/models/article-list-config.model.ts",
+        "sourceId": "src/app/features/article/services/articles.service.ts",
+        "targetId": "src/app/features/article/models/article-list-config.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/services/articles.service.ts",
+            "line": 5
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/services/articles.service.ts->src/app/features/article/models/article.model.ts",
+        "sourceId": "src/app/features/article/services/articles.service.ts",
+        "targetId": "src/app/features/article/models/article.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/services/articles.service.ts",
+            "line": 6
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/services/comments.service.spec.ts->src/app/features/article/models/comment.model.ts",
+        "sourceId": "src/app/features/article/services/comments.service.spec.ts",
+        "targetId": "src/app/features/article/models/comment.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/services/comments.service.spec.ts",
+            "line": 9
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/services/comments.service.spec.ts->src/app/features/article/services/comments.service.ts",
+        "sourceId": "src/app/features/article/services/comments.service.spec.ts",
+        "targetId": "src/app/features/article/services/comments.service.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/services/comments.service.spec.ts",
+            "line": 8
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/services/comments.service.ts->src/app/features/article/models/comment.model.ts",
+        "sourceId": "src/app/features/article/services/comments.service.ts",
+        "targetId": "src/app/features/article/models/comment.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/services/comments.service.ts",
+            "line": 5
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/article/services/tags.service.spec.ts->src/app/features/article/services/tags.service.ts",
+        "sourceId": "src/app/features/article/services/tags.service.spec.ts",
+        "targetId": "src/app/features/article/services/tags.service.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/services/tags.service.spec.ts",
+            "line": 8
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/profile/components/follow-button.component.ts->src/app/core/auth/services/user.service.ts",
+        "sourceId": "src/app/features/profile/components/follow-button.component.ts",
+        "targetId": "src/app/core/auth/services/user.service.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/profile/components/follow-button.component.ts",
+            "line": 15
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/profile/components/follow-button.component.ts->src/app/features/profile/models/profile.model.ts",
+        "sourceId": "src/app/features/profile/components/follow-button.component.ts",
+        "targetId": "src/app/features/profile/models/profile.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/profile/components/follow-button.component.ts",
+            "line": 16
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/profile/components/follow-button.component.ts->src/app/features/profile/services/profile.service.ts",
+        "sourceId": "src/app/features/profile/components/follow-button.component.ts",
+        "targetId": "src/app/features/profile/services/profile.service.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/profile/components/follow-button.component.ts",
+            "line": 14
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/profile/components/profile-articles.component.ts->src/app/features/article/components/article-list.component.ts",
+        "sourceId": "src/app/features/profile/components/profile-articles.component.ts",
+        "targetId": "src/app/features/article/components/article-list.component.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/profile/components/profile-articles.component.ts",
+            "line": 3
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/profile/components/profile-articles.component.ts->src/app/features/article/models/article-list-config.model.ts",
+        "sourceId": "src/app/features/profile/components/profile-articles.component.ts",
+        "targetId": "src/app/features/article/models/article-list-config.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/profile/components/profile-articles.component.ts",
+            "line": 6
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/profile/components/profile-articles.component.ts->src/app/features/profile/models/profile.model.ts",
+        "sourceId": "src/app/features/profile/components/profile-articles.component.ts",
+        "targetId": "src/app/features/profile/models/profile.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/profile/components/profile-articles.component.ts",
+            "line": 5
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/profile/components/profile-articles.component.ts->src/app/features/profile/services/profile.service.ts",
+        "sourceId": "src/app/features/profile/components/profile-articles.component.ts",
+        "targetId": "src/app/features/profile/services/profile.service.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/profile/components/profile-articles.component.ts",
+            "line": 4
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/profile/components/profile-favorites.component.ts->src/app/features/article/components/article-list.component.ts",
+        "sourceId": "src/app/features/profile/components/profile-favorites.component.ts",
+        "targetId": "src/app/features/article/components/article-list.component.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/profile/components/profile-favorites.component.ts",
+            "line": 3
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/profile/components/profile-favorites.component.ts->src/app/features/article/models/article-list-config.model.ts",
+        "sourceId": "src/app/features/profile/components/profile-favorites.component.ts",
+        "targetId": "src/app/features/article/models/article-list-config.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/profile/components/profile-favorites.component.ts",
+            "line": 6
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/profile/components/profile-favorites.component.ts->src/app/features/profile/models/profile.model.ts",
+        "sourceId": "src/app/features/profile/components/profile-favorites.component.ts",
+        "targetId": "src/app/features/profile/models/profile.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/profile/components/profile-favorites.component.ts",
+            "line": 5
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/profile/components/profile-favorites.component.ts->src/app/features/profile/services/profile.service.ts",
+        "sourceId": "src/app/features/profile/components/profile-favorites.component.ts",
+        "targetId": "src/app/features/profile/services/profile.service.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/profile/components/profile-favorites.component.ts",
+            "line": 4
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/profile/pages/profile/profile.component.ts->src/app/core/auth/services/user.service.ts",
+        "sourceId": "src/app/features/profile/pages/profile/profile.component.ts",
+        "targetId": "src/app/core/auth/services/user.service.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/profile/pages/profile/profile.component.ts",
+            "line": 5
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/profile/pages/profile/profile.component.ts->src/app/core/models/errors.model.ts",
+        "sourceId": "src/app/features/profile/pages/profile/profile.component.ts",
+        "targetId": "src/app/core/models/errors.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/profile/pages/profile/profile.component.ts",
+            "line": 10
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/profile/pages/profile/profile.component.ts->src/app/features/profile/components/follow-button.component.ts",
+        "sourceId": "src/app/features/profile/pages/profile/profile.component.ts",
+        "targetId": "src/app/features/profile/components/follow-button.component.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/profile/pages/profile/profile.component.ts",
+            "line": 9
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/profile/pages/profile/profile.component.ts->src/app/features/profile/models/profile.model.ts",
+        "sourceId": "src/app/features/profile/pages/profile/profile.component.ts",
+        "targetId": "src/app/features/profile/models/profile.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/profile/pages/profile/profile.component.ts",
+            "line": 6
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/profile/pages/profile/profile.component.ts->src/app/features/profile/services/profile.service.ts",
+        "sourceId": "src/app/features/profile/pages/profile/profile.component.ts",
+        "targetId": "src/app/features/profile/services/profile.service.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/profile/pages/profile/profile.component.ts",
+            "line": 7
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/profile/pages/profile/profile.component.ts->src/app/shared/components/list-errors.component.ts",
+        "sourceId": "src/app/features/profile/pages/profile/profile.component.ts",
+        "targetId": "src/app/shared/components/list-errors.component.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/profile/pages/profile/profile.component.ts",
+            "line": 11
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/profile/pages/profile/profile.component.ts->src/app/shared/pipes/default-image.pipe.ts",
+        "sourceId": "src/app/features/profile/pages/profile/profile.component.ts",
+        "targetId": "src/app/shared/pipes/default-image.pipe.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/profile/pages/profile/profile.component.ts",
+            "line": 12
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/profile/profile.routes.ts->src/app/features/profile/pages/profile/profile.component.ts",
+        "sourceId": "src/app/features/profile/profile.routes.ts",
+        "targetId": "src/app/features/profile/pages/profile/profile.component.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/profile/profile.routes.ts",
+            "line": 2
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/profile/services/profile.service.spec.ts->src/app/features/profile/models/profile.model.ts",
+        "sourceId": "src/app/features/profile/services/profile.service.spec.ts",
+        "targetId": "src/app/features/profile/models/profile.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/profile/services/profile.service.spec.ts",
+            "line": 9
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/profile/services/profile.service.spec.ts->src/app/features/profile/services/profile.service.ts",
+        "sourceId": "src/app/features/profile/services/profile.service.spec.ts",
+        "targetId": "src/app/features/profile/services/profile.service.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/profile/services/profile.service.spec.ts",
+            "line": 8
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/profile/services/profile.service.ts->src/app/features/profile/models/profile.model.ts",
+        "sourceId": "src/app/features/profile/services/profile.service.ts",
+        "targetId": "src/app/features/profile/models/profile.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/profile/services/profile.service.ts",
+            "line": 4
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/settings/settings.component.ts->src/app/core/auth/services/user.service.ts",
+        "sourceId": "src/app/features/settings/settings.component.ts",
+        "targetId": "src/app/core/auth/services/user.service.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/settings/settings.component.ts",
+            "line": 5
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/settings/settings.component.ts->src/app/core/auth/user.model.ts",
+        "sourceId": "src/app/features/settings/settings.component.ts",
+        "targetId": "src/app/core/auth/user.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/settings/settings.component.ts",
+            "line": 4
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/settings/settings.component.ts->src/app/core/models/errors.model.ts",
+        "sourceId": "src/app/features/settings/settings.component.ts",
+        "targetId": "src/app/core/models/errors.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/settings/settings.component.ts",
+            "line": 7
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/features/settings/settings.component.ts->src/app/shared/components/list-errors.component.ts",
+        "sourceId": "src/app/features/settings/settings.component.ts",
+        "targetId": "src/app/shared/components/list-errors.component.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/features/settings/settings.component.ts",
+            "line": 6
+          }
+        ]
+      },
+      {
+        "id": "import:src/app/shared/components/list-errors.component.ts->src/app/core/models/errors.model.ts",
+        "sourceId": "src/app/shared/components/list-errors.component.ts",
+        "targetId": "src/app/core/models/errors.model.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/app/shared/components/list-errors.component.ts",
+            "line": 2
+          }
+        ]
+      },
+      {
+        "id": "import:src/main.ts->src/app/app.component.ts",
+        "sourceId": "src/main.ts",
+        "targetId": "src/app/app.component.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/main.ts",
+            "line": 2
+          }
+        ]
+      },
+      {
+        "id": "import:src/main.ts->src/app/app.config.ts",
+        "sourceId": "src/main.ts",
+        "targetId": "src/app/app.config.ts",
+        "kind": "import",
+        "evidence": [
+          {
+            "path": "src/main.ts",
+            "line": 3
+          }
+        ]
+      },
+      {
+        "id": "lazy-route:src/app/app.routes.ts->src/app/core/auth/auth.component.ts",
+        "sourceId": "src/app/app.routes.ts",
+        "targetId": "src/app/core/auth/auth.component.ts",
+        "kind": "lazy-route",
+        "evidence": [
+          {
+            "path": "src/app/app.routes.ts",
+            "line": 25
+          },
+          {
+            "path": "src/app/app.routes.ts",
+            "line": 30
+          }
+        ]
+      },
+      {
+        "id": "lazy-route:src/app/app.routes.ts->src/app/features/article/pages/article/article.component.ts",
+        "sourceId": "src/app/app.routes.ts",
+        "targetId": "src/app/features/article/pages/article/article.component.ts",
+        "kind": "lazy-route",
+        "evidence": [
+          {
+            "path": "src/app/app.routes.ts",
+            "line": 59
+          }
+        ]
+      },
+      {
+        "id": "lazy-route:src/app/app.routes.ts->src/app/features/article/pages/editor/editor.component.ts",
+        "sourceId": "src/app/app.routes.ts",
+        "targetId": "src/app/features/article/pages/editor/editor.component.ts",
+        "kind": "lazy-route",
+        "evidence": [
+          {
+            "path": "src/app/app.routes.ts",
+            "line": 47
+          },
+          {
+            "path": "src/app/app.routes.ts",
+            "line": 52
+          }
+        ]
+      },
+      {
+        "id": "lazy-route:src/app/app.routes.ts->src/app/features/article/pages/home/home.component.ts",
+        "sourceId": "src/app/app.routes.ts",
+        "targetId": "src/app/features/article/pages/home/home.component.ts",
+        "kind": "lazy-route",
+        "evidence": [
+          {
+            "path": "src/app/app.routes.ts",
+            "line": 17
+          },
+          {
+            "path": "src/app/app.routes.ts",
+            "line": 21
+          }
+        ]
+      },
+      {
+        "id": "lazy-route:src/app/app.routes.ts->src/app/features/profile/profile.routes.ts",
+        "sourceId": "src/app/app.routes.ts",
+        "targetId": "src/app/features/profile/profile.routes.ts",
+        "kind": "lazy-route",
+        "evidence": [
+          {
+            "path": "src/app/app.routes.ts",
+            "line": 40
+          }
+        ]
+      },
+      {
+        "id": "lazy-route:src/app/app.routes.ts->src/app/features/settings/settings.component.ts",
+        "sourceId": "src/app/app.routes.ts",
+        "targetId": "src/app/features/settings/settings.component.ts",
+        "kind": "lazy-route",
+        "evidence": [
+          {
+            "path": "src/app/app.routes.ts",
+            "line": 35
+          }
+        ]
+      },
+      {
+        "id": "lazy-route:src/app/features/profile/profile.routes.ts->src/app/features/profile/components/profile-articles.component.ts",
+        "sourceId": "src/app/features/profile/profile.routes.ts",
+        "targetId": "src/app/features/profile/components/profile-articles.component.ts",
+        "kind": "lazy-route",
+        "evidence": [
+          {
+            "path": "src/app/features/profile/profile.routes.ts",
+            "line": 14
+          }
+        ]
+      },
+      {
+        "id": "lazy-route:src/app/features/profile/profile.routes.ts->src/app/features/profile/components/profile-favorites.component.ts",
+        "sourceId": "src/app/features/profile/profile.routes.ts",
+        "targetId": "src/app/features/profile/components/profile-favorites.component.ts",
+        "kind": "lazy-route",
+        "evidence": [
+          {
+            "path": "src/app/features/profile/profile.routes.ts",
+            "line": 18
+          }
+        ]
+      },
+      {
+        "id": "standalone-import:src/app/app.component.ts->src/app/core/layout/footer.component.ts",
+        "sourceId": "src/app/app.component.ts",
+        "targetId": "src/app/core/layout/footer.component.ts",
+        "kind": "standalone-import",
+        "evidence": [
+          {
+            "path": "src/app/app.component.ts",
+            "line": 9
+          }
+        ]
+      },
+      {
+        "id": "standalone-import:src/app/app.component.ts->src/app/core/layout/header.component.ts",
+        "sourceId": "src/app/app.component.ts",
+        "targetId": "src/app/core/layout/header.component.ts",
+        "kind": "standalone-import",
+        "evidence": [
+          {
+            "path": "src/app/app.component.ts",
+            "line": 9
+          }
+        ]
+      },
+      {
+        "id": "standalone-import:src/app/core/auth/auth.component.ts->src/app/shared/components/list-errors.component.ts",
+        "sourceId": "src/app/core/auth/auth.component.ts",
+        "targetId": "src/app/shared/components/list-errors.component.ts",
+        "kind": "standalone-import",
+        "evidence": [
+          {
+            "path": "src/app/core/auth/auth.component.ts",
+            "line": 18
+          }
+        ]
+      },
+      {
+        "id": "standalone-import:src/app/core/layout/header.component.ts->src/app/shared/pipes/default-image.pipe.ts",
+        "sourceId": "src/app/core/layout/header.component.ts",
+        "targetId": "src/app/shared/pipes/default-image.pipe.ts",
+        "kind": "standalone-import",
+        "evidence": [
+          {
+            "path": "src/app/core/layout/header.component.ts",
+            "line": 10
+          }
+        ]
+      },
+      {
+        "id": "standalone-import:src/app/features/article/components/article-comment.component.ts->src/app/shared/pipes/default-image.pipe.ts",
+        "sourceId": "src/app/features/article/components/article-comment.component.ts",
+        "targetId": "src/app/shared/pipes/default-image.pipe.ts",
+        "kind": "standalone-import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/components/article-comment.component.ts",
+            "line": 40
+          }
+        ]
+      },
+      {
+        "id": "standalone-import:src/app/features/article/components/article-list.component.ts->src/app/features/article/components/article-preview.component.ts",
+        "sourceId": "src/app/features/article/components/article-list.component.ts",
+        "targetId": "src/app/features/article/components/article-preview.component.ts",
+        "kind": "standalone-import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/components/article-list.component.ts",
+            "line": 56
+          }
+        ]
+      },
+      {
+        "id": "standalone-import:src/app/features/article/components/article-meta.component.ts->src/app/shared/pipes/default-image.pipe.ts",
+        "sourceId": "src/app/features/article/components/article-meta.component.ts",
+        "targetId": "src/app/shared/pipes/default-image.pipe.ts",
+        "kind": "standalone-import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/components/article-meta.component.ts",
+            "line": 28
+          }
+        ]
+      },
+      {
+        "id": "standalone-import:src/app/features/article/components/article-preview.component.ts->src/app/features/article/components/article-meta.component.ts",
+        "sourceId": "src/app/features/article/components/article-preview.component.ts",
+        "targetId": "src/app/features/article/components/article-meta.component.ts",
+        "kind": "standalone-import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/components/article-preview.component.ts",
+            "line": 32
+          }
+        ]
+      },
+      {
+        "id": "standalone-import:src/app/features/article/components/article-preview.component.ts->src/app/features/article/components/favorite-button.component.ts",
+        "sourceId": "src/app/features/article/components/article-preview.component.ts",
+        "targetId": "src/app/features/article/components/favorite-button.component.ts",
+        "kind": "standalone-import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/components/article-preview.component.ts",
+            "line": 32
+          }
+        ]
+      },
+      {
+        "id": "standalone-import:src/app/features/article/pages/article/article.component.ts->src/app/core/auth/if-authenticated.directive.ts",
+        "sourceId": "src/app/features/article/pages/article/article.component.ts",
+        "targetId": "src/app/core/auth/if-authenticated.directive.ts",
+        "kind": "standalone-import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/article/article.component.ts",
+            "line": 40
+          }
+        ]
+      },
+      {
+        "id": "standalone-import:src/app/features/article/pages/article/article.component.ts->src/app/features/article/components/article-comment.component.ts",
+        "sourceId": "src/app/features/article/pages/article/article.component.ts",
+        "targetId": "src/app/features/article/components/article-comment.component.ts",
+        "kind": "standalone-import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/article/article.component.ts",
+            "line": 38
+          }
+        ]
+      },
+      {
+        "id": "standalone-import:src/app/features/article/pages/article/article.component.ts->src/app/features/article/components/article-meta.component.ts",
+        "sourceId": "src/app/features/article/pages/article/article.component.ts",
+        "targetId": "src/app/features/article/components/article-meta.component.ts",
+        "kind": "standalone-import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/article/article.component.ts",
+            "line": 29
+          }
+        ]
+      },
+      {
+        "id": "standalone-import:src/app/features/article/pages/article/article.component.ts->src/app/features/article/components/favorite-button.component.ts",
+        "sourceId": "src/app/features/article/pages/article/article.component.ts",
+        "targetId": "src/app/features/article/components/favorite-button.component.ts",
+        "kind": "standalone-import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/article/article.component.ts",
+            "line": 33
+          }
+        ]
+      },
+      {
+        "id": "standalone-import:src/app/features/article/pages/article/article.component.ts->src/app/features/profile/components/follow-button.component.ts",
+        "sourceId": "src/app/features/article/pages/article/article.component.ts",
+        "targetId": "src/app/features/profile/components/follow-button.component.ts",
+        "kind": "standalone-import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/article/article.component.ts",
+            "line": 32
+          }
+        ]
+      },
+      {
+        "id": "standalone-import:src/app/features/article/pages/article/article.component.ts->src/app/shared/components/list-errors.component.ts",
+        "sourceId": "src/app/features/article/pages/article/article.component.ts",
+        "targetId": "src/app/shared/components/list-errors.component.ts",
+        "kind": "standalone-import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/article/article.component.ts",
+            "line": 36
+          }
+        ]
+      },
+      {
+        "id": "standalone-import:src/app/features/article/pages/article/article.component.ts->src/app/shared/pipes/default-image.pipe.ts",
+        "sourceId": "src/app/features/article/pages/article/article.component.ts",
+        "targetId": "src/app/shared/pipes/default-image.pipe.ts",
+        "kind": "standalone-import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/article/article.component.ts",
+            "line": 41
+          }
+        ]
+      },
+      {
+        "id": "standalone-import:src/app/features/article/pages/article/article.component.ts->src/app/shared/pipes/markdown.pipe.ts",
+        "sourceId": "src/app/features/article/pages/article/article.component.ts",
+        "targetId": "src/app/shared/pipes/markdown.pipe.ts",
+        "kind": "standalone-import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/article/article.component.ts",
+            "line": 34
+          }
+        ]
+      },
+      {
+        "id": "standalone-import:src/app/features/article/pages/editor/editor.component.ts->src/app/shared/components/list-errors.component.ts",
+        "sourceId": "src/app/features/article/pages/editor/editor.component.ts",
+        "targetId": "src/app/shared/components/list-errors.component.ts",
+        "kind": "standalone-import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/editor/editor.component.ts",
+            "line": 20
+          }
+        ]
+      },
+      {
+        "id": "standalone-import:src/app/features/article/pages/home/home.component.ts->src/app/core/auth/if-authenticated.directive.ts",
+        "sourceId": "src/app/features/article/pages/home/home.component.ts",
+        "targetId": "src/app/core/auth/if-authenticated.directive.ts",
+        "kind": "standalone-import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/home/home.component.ts",
+            "line": 18
+          }
+        ]
+      },
+      {
+        "id": "standalone-import:src/app/features/article/pages/home/home.component.ts->src/app/features/article/components/article-list.component.ts",
+        "sourceId": "src/app/features/article/pages/home/home.component.ts",
+        "targetId": "src/app/features/article/components/article-list.component.ts",
+        "kind": "standalone-import",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/home/home.component.ts",
+            "line": 18
+          }
+        ]
+      },
+      {
+        "id": "standalone-import:src/app/features/profile/components/profile-articles.component.ts->src/app/features/article/components/article-list.component.ts",
+        "sourceId": "src/app/features/profile/components/profile-articles.component.ts",
+        "targetId": "src/app/features/article/components/article-list.component.ts",
+        "kind": "standalone-import",
+        "evidence": [
+          {
+            "path": "src/app/features/profile/components/profile-articles.component.ts",
+            "line": 14
+          }
+        ]
+      },
+      {
+        "id": "standalone-import:src/app/features/profile/components/profile-favorites.component.ts->src/app/features/article/components/article-list.component.ts",
+        "sourceId": "src/app/features/profile/components/profile-favorites.component.ts",
+        "targetId": "src/app/features/article/components/article-list.component.ts",
+        "kind": "standalone-import",
+        "evidence": [
+          {
+            "path": "src/app/features/profile/components/profile-favorites.component.ts",
+            "line": 14
+          }
+        ]
+      },
+      {
+        "id": "standalone-import:src/app/features/profile/pages/profile/profile.component.ts->src/app/features/profile/components/follow-button.component.ts",
+        "sourceId": "src/app/features/profile/pages/profile/profile.component.ts",
+        "targetId": "src/app/features/profile/components/follow-button.component.ts",
+        "kind": "standalone-import",
+        "evidence": [
+          {
+            "path": "src/app/features/profile/pages/profile/profile.component.ts",
+            "line": 18
+          },
+          {
+            "path": "src/app/features/profile/pages/profile/profile.component.ts",
+            "line": 22
+          }
+        ]
+      },
+      {
+        "id": "standalone-import:src/app/features/profile/pages/profile/profile.component.ts->src/app/shared/components/list-errors.component.ts",
+        "sourceId": "src/app/features/profile/pages/profile/profile.component.ts",
+        "targetId": "src/app/shared/components/list-errors.component.ts",
+        "kind": "standalone-import",
+        "evidence": [
+          {
+            "path": "src/app/features/profile/pages/profile/profile.component.ts",
+            "line": 23
+          }
+        ]
+      },
+      {
+        "id": "standalone-import:src/app/features/profile/pages/profile/profile.component.ts->src/app/shared/pipes/default-image.pipe.ts",
+        "sourceId": "src/app/features/profile/pages/profile/profile.component.ts",
+        "targetId": "src/app/shared/pipes/default-image.pipe.ts",
+        "kind": "standalone-import",
+        "evidence": [
+          {
+            "path": "src/app/features/profile/pages/profile/profile.component.ts",
+            "line": 24
+          }
+        ]
+      },
+      {
+        "id": "standalone-import:src/app/features/settings/settings.component.ts->src/app/shared/components/list-errors.component.ts",
+        "sourceId": "src/app/features/settings/settings.component.ts",
+        "targetId": "src/app/shared/components/list-errors.component.ts",
+        "kind": "standalone-import",
+        "evidence": [
+          {
+            "path": "src/app/features/settings/settings.component.ts",
+            "line": 21
+          }
+        ]
+      }
+    ],
+    "regions": [
+      {
+        "id": "folder:src/app",
+        "label": "app",
+        "kind": "folder",
+        "rootPath": "src/app"
+      },
+      {
+        "id": "folder:src/app/core",
+        "label": "core",
+        "kind": "folder",
+        "rootPath": "src/app/core",
+        "parentId": "folder:src/app"
+      },
+      {
+        "id": "folder:src/app/shared",
+        "label": "shared",
+        "kind": "folder",
+        "rootPath": "src/app/shared",
+        "parentId": "folder:src/app"
+      },
+      {
+        "id": "lazy-route:src/app/core/auth",
+        "label": "auth",
+        "kind": "lazy-route",
+        "rootPath": "src/app/core/auth",
+        "parentId": "folder:src/app/core"
+      },
+      {
+        "id": "lazy-route:src/app/features/article",
+        "label": "article",
+        "kind": "lazy-route",
+        "rootPath": "src/app/features/article",
+        "parentId": "folder:src/app"
+      },
+      {
+        "id": "lazy-route:src/app/features/profile",
+        "label": "profile",
+        "kind": "lazy-route",
+        "rootPath": "src/app/features/profile",
+        "parentId": "folder:src/app"
+      },
+      {
+        "id": "lazy-route:src/app/features/settings",
+        "label": "settings",
+        "kind": "lazy-route",
+        "rootPath": "src/app/features/settings",
+        "parentId": "folder:src/app"
+      }
+    ]
+  },
+  "findings": [],
+  "unresolved": []
+}

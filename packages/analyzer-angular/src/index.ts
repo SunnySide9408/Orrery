@@ -1,2 +1,2 @@
-// Intentionally empty for Phase 0. See this package's README for what lands here.
-export {};
+export { analyzeAngularProject, ANALYZER_VERSION } from './analyze';
+export type { AnalyzeInput, ProjectFile } from './analyze';

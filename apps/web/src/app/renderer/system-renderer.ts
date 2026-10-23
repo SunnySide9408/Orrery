@@ -30,6 +30,11 @@ export interface SystemRenderer {
   /** Draw only these edges. Edges are hidden by default to keep the overview calm. */
   showEdges(edgeIds: ReadonlySet<string>): void;
   setReducedMotion(enabled: boolean): void;
+  /**
+   * Pixels on the right covered by UI (the inspector). The view centres and
+   * frames content in the space that is left. Call before `focusNode`.
+   */
+  setRightInset(pixels: number): void;
   resize(): void;
   dispose(): void;
 }

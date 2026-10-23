@@ -70,7 +70,7 @@ Arcadia checks every phase in the built-in browser before it counts as done, on 
 
 - A Remote Control session on "samy-rog" pulls the phase branch (or `main`) into `C:\Projects\Orrery-main`, runs `npm install` and `npm start`, and opens `http://localhost:4200` in the built-in browser.
 - This happens before the phase PR is merged, so problems are caught on the branch.
-- There is no hosted preview link. The public live site the brief asks for in Phase 1 is a separate step; its host is still to choose.
+- There is no hosted preview link. The public live site (GitHub Pages, from `main`) is a separate step.
 
 ## Phase 0 · Visual proof (done)
 
@@ -84,13 +84,13 @@ Leftovers carried into Phase 1: label overlap in the dense core region; the READ
 
 **Deliverables**
 
-- Pick the demo app: public, MIT or similar, medium size, uses lazy routes and standalone components. Credit it in the README.
+- Pick the demo app: public, MIT or similar, medium size, uses lazy routes and standalone components. Credit it in the README. **Chosen: Angular RealWorld** (docs/decisions/0004).
 - `packages/analyzer-angular` (Node side): node kinds from decorators, lazy-route regions, standalone-import edges, file imports with relative paths and tsconfig aliases, unresolved list.
 - `tools/cli`: analyses the sample into JSON shipped with the app.
 - Angular shell: header, search, inspector panel, legend, breadcrumbs, reset, list/table view.
-- Public deploy of `main` to a static host (host still to choose), from GitHub Actions.
+- Public deploy of `main` to a static host from GitHub Actions. **Chosen: GitHub Pages** (docs/decisions/0006). The workflow is manual for now; going live is Arcadia's call.
 - First Playwright test: open sample → search → select → inspector shows the right facts.
-- Name clash check for "Orrery" on GitHub and npm.
+- Name clash check for "Orrery" on GitHub and npm. **Done:** npm `orrery` is an empty placeholder and other uses are unrelated; the name stays.
 - Fix the Phase 0 label overlap.
 
 **Done when**
