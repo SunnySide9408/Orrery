@@ -4,7 +4,7 @@ import { defineConfig } from 'vitest/config';
 // tests through `ng test`, which uses Angular's Vitest integration.
 export default defineConfig({
   test: {
-    include: ['packages/*/src/**/*.spec.ts'],
+    include: ['packages/*/src/**/*.spec.ts', 'fixtures/*/src/**/*.spec.ts'],
     passWithNoTests: true,
   },
 });

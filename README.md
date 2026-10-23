@@ -4,6 +4,8 @@ Your Angular app, as a living solar system. Orrery is a visual architecture expl
 
 Status: Phase 0 (visual proof on a hand-written fixture). Nothing is deployed yet.
 
+![Selecting AuthService lights up its dependants in three lazy features](docs/images/phase-0-authservice.png)
+
 ## Getting started
 
 Requires Node 24 (see `.nvmrc`).
@@ -29,8 +31,9 @@ CI runs all of these on every pull request.
 apps/web                   Angular explorer
 packages/contracts         analysis-result types, validation, ID rules
 packages/analyzer-angular  TypeScript compiler API → analysis result (later)
-packages/graph-core        traversal, impact, cycles, metrics (later)
-packages/layout            deterministic positions (later)
+packages/graph-core        adjacency and dependants (impact, cycles, metrics later)
+packages/layout            deterministic orbit layout
+fixtures/shop              hand-written analysis result: 40 nodes, 3 lazy features
 docs/decisions             architecture decision records
 ```
 
