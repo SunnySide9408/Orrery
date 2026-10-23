@@ -20,3 +20,5 @@ A typed boundary keeps the scene swappable and testable: the explorer's tests us
 ## Limits
 
 Node labels are created for every node up front. That is fine at 40 nodes; at a few hundred it should become label pooling or semantic zoom (Phase 4).
+
+Update, Phase 1: each frame, labels that would overlap a label of higher priority are hidden (regions first, then the focused node, the hovered node, and larger planets). The inspector's width is passed in with `setRightInset`, so the camera frames the focus in the part of the screen the panel leaves free.
