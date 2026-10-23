@@ -61,7 +61,18 @@
               "buildTarget": "web:build:development"
             }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "development",
+          "options": {
+            "prebundle": {
+              "exclude": [
+                "@orrery/contracts",
+                "@orrery/graph-core",
+                "@orrery/layout",
+                "@orrery/fixture-shop",
+                "@orrery/analyzer-angular"
+              ]
+            }
+          }
         },
         "test": {
           "builder": "@angular/build:unit-test"

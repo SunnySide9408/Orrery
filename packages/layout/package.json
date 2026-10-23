@@ -10,5 +10,8 @@
   },
   "dependencies": {
     "@orrery/contracts": "0.0.0"
+  },
+  "devDependencies": {
+    "@orrery/fixture-shop": "0.0.0"
   }
 }
