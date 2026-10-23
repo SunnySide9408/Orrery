@@ -2,7 +2,7 @@
 
 Your Angular app, as a living solar system. Orrery is a visual architecture explorer for Angular applications: lazy routes and feature folders become solar systems, components and services become planets, and their relationships become edges you can follow.
 
-**Live:** https://sunnyside9408.github.io/Orrery/
+Not deployed yet: run it locally (below). A manual GitHub Pages deploy is ready for when it is (see docs/decisions/0006).
 
 Status: Phase 1 (app shell and one real sample, the Angular RealWorld app, analysed at build time). Exploring your own folder comes in Phase 2.
 
@@ -36,7 +36,7 @@ npm start          # http://localhost:4200
 | `npm run samples`      | Re-analyse the bundled samples into `apps/web/public`    |
 | `npm run e2e`          | Playwright tests against the production build            |
 
-CI runs all of these on every pull request, checks that the app bundle has no TypeScript compiler in it, and checks that the sample JSON matches what the analyser produces. Pushes to `main` deploy to GitHub Pages.
+CI runs all of these on every pull request, checks that the app bundle has no TypeScript compiler in it, and checks that the sample JSON matches what the analyser produces. Deploying to GitHub Pages is a manual workflow for now.
 
 To analyse another Angular project on the command line: `npm run orrery -- analyze <folder> --out result.json`.
 

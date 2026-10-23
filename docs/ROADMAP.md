@@ -88,7 +88,7 @@ Leftovers carried into Phase 1: label overlap in the dense core region; the READ
 - `packages/analyzer-angular` (Node side): node kinds from decorators, lazy-route regions, standalone-import edges, file imports with relative paths and tsconfig aliases, unresolved list.
 - `tools/cli`: analyses the sample into JSON shipped with the app.
 - Angular shell: header, search, inspector panel, legend, breadcrumbs, reset, list/table view.
-- Public deploy of `main` to a static host from GitHub Actions. **Chosen: GitHub Pages** (docs/decisions/0006).
+- Public deploy of `main` to a static host from GitHub Actions. **Chosen: GitHub Pages** (docs/decisions/0006). The workflow is manual for now; going live is Arcadia's call.
 - First Playwright test: open sample → search → select → inspector shows the right facts.
 - Name clash check for "Orrery" on GitHub and npm. **Done:** npm `orrery` is an empty placeholder and other uses are unrelated; the name stays.
 - Fix the Phase 0 label overlap.

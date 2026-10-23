@@ -1,10 +1,10 @@
 name: Deploy
 
 # Publishes main to GitHub Pages: https://sunnyside9408.github.io/Orrery/
-# Needs Settings > Pages > Source set to "GitHub Actions".
+# Manual for now (Actions > Deploy > Run workflow): the app is used locally
+# until it is ready. Before the first run, set Settings > Pages > Source to
+# "GitHub Actions". To deploy on every merge, add `push: branches: [main]`.
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
