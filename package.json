@@ -28,7 +28,7 @@
     "test:web": "ng test --watch=false",
     "e2e": "playwright test",
     "lint": "eslint .",
-    "typecheck": "npm run typecheck --workspaces && tsc -p apps/web/tsconfig.app.json --noEmit && tsc -p apps/web/tsconfig.spec.json --noEmit",
+    "typecheck": "npm run typecheck --workspaces && tsc -p apps/web/tsconfig.app.json --noEmit && tsc -p apps/web/tsconfig.worker.json --noEmit && tsc -p apps/web/tsconfig.spec.json --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
@@ -67,5 +67,8 @@
     "typescript": "~6.0.2",
     "typescript-eslint": "8.71.0",
     "vitest": "^5.0.0"
+  },
+  "overrides": {
+    "vite": "8.3.5"
   }
 }

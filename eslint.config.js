@@ -16,7 +16,7 @@ const frameworkImports = {
 };
 
 export default defineConfig([
-  { ignores: ['dist/', 'out-tsc/', 'coverage/', '.angular/'] },
+  { ignores: ['dist/', 'out-tsc/', 'coverage/', '.angular/', 'e2e/fixtures/'] },
   {
     files: ['**/*.ts'],
     extends: [eslint.configs.recommended, tseslint.configs.recommended, tseslint.configs.stylistic],

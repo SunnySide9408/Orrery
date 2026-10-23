@@ -44,14 +44,22 @@ import { Search } from './search';
         Orrery
       </a>
       <p class="text-sm text-slate-300">
-        <a
-          [href]="sample.info.repository"
-          target="_blank"
-          rel="noopener"
-          class="text-slate-100 underline decoration-slate-500 underline-offset-2 hover:decoration-slate-200 focus-visible:outline-2 focus-visible:outline-sky-400"
-          >{{ sample.info.name }}</a
-        >
-        <span class="text-slate-400"> · {{ sample.info.license }} · {{ stats() }}</span>
+        @if (sample.info.repository) {
+          <a
+            [href]="sample.info.repository"
+            target="_blank"
+            rel="noopener"
+            [class]="linkClass + ' text-slate-100'"
+            >{{ sample.info.name }}</a
+          >
+          <span class="text-slate-400"> · {{ sample.info.license }} · {{ stats() }}</span>
+        } @else {
+          <span class="text-slate-100">{{ sample.info.name }}</span>
+          <span class="text-slate-400">
+            · analysed in this browser · {{ stats() }} ·
+            <a routerLink="/open" [class]="linkClass">report</a>
+          </span>
+        }
       </p>
       <app-search
         class="order-last w-full sm:order-none sm:ml-auto sm:w-72"
@@ -59,6 +67,7 @@ import { Search } from './search';
         [regions]="sample.result.graph.regions"
         (selected)="state.select($event)"
       />
+      <a routerLink="/open" [class]="linkClass + ' text-sm text-slate-300'">Open a folder</a>
       <nav aria-label="View" class="flex rounded-md border border-slate-700 text-sm">
         <a
           routerLink="./"
@@ -169,6 +178,8 @@ export class Shell {
     matrixParams: 'ignored',
     fragment: 'ignored',
   };
+  protected readonly linkClass =
+    'underline decoration-slate-500 underline-offset-2 hover:decoration-slate-200 focus-visible:outline-2 focus-visible:outline-sky-400';
   protected readonly viewLinkClass =
     'px-3 py-1 text-slate-300 first:rounded-l-md last:rounded-r-md hover:text-white focus-visible:outline-2 focus-visible:outline-sky-400';
   protected readonly crumbClass =

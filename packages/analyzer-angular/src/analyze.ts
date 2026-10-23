@@ -36,6 +36,11 @@ export interface AnalyzeInput {
   tsconfigPath?: string;
 }
 
+export interface AnalyzeOptions {
+  /** Called after each file is parsed, so a worker can report progress. */
+  onFileParsed?: (parsed: number, total: number) => void;
+}
+
 /**
  * Folder names that hold one sub-folder per feature. A lazy route loaded from
  * `features/article/pages/home/home.component.ts` belongs to the
@@ -47,16 +52,21 @@ const FEATURE_CONTAINERS = new Set(['features', 'feature', 'pages', 'modules', '
  * Turns Angular source text into an analysis result. Pure: no file system, no
  * clock, no network, so the same code runs in the CLI and in a Web Worker.
  */
-export function analyzeAngularProject(input: AnalyzeInput): AnalysisResult {
+export function analyzeAngularProject(
+  input: AnalyzeInput,
+  options: AnalyzeOptions = {},
+): AnalysisResult {
   const texts = new Map(input.files.map((file) => [normalizePath(file.path), file.text]));
   const sourcePaths = [...texts.keys()]
     .filter((path) => path.endsWith('.ts') && !path.endsWith('.d.ts'))
     .sort();
   const sourceSet = new Set(sourcePaths);
   const pathOptions = readPathOptions(texts, input.tsconfigPath);
-  const facts = new Map<string, FileFacts>(
-    sourcePaths.map((path) => [path, parseFile(path, texts.get(path)!)]),
-  );
+  const facts = new Map<string, FileFacts>();
+  for (const path of sourcePaths) {
+    facts.set(path, parseFile(path, texts.get(path)!));
+    options.onFileParsed?.(facts.size, sourcePaths.length);
+  }
 
   const edges = new Map<string, GraphEdge>();
   const unresolved: UnresolvedItem[] = [];

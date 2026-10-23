@@ -3,8 +3,9 @@ export interface SampleInfo {
   id: string;
   name: string;
   description: string;
-  repository: string;
-  license: string;
+  /** Bundled samples link to their source; an analysed local folder has none. */
+  repository?: string;
+  license?: string;
   /** The node the overview suggests clicking first: a widely used service. */
   suggestedNode: string;
 }

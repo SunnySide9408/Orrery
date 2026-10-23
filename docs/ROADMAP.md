@@ -68,7 +68,7 @@ Each phase runs in its own thread and lands as one or more pull requests.
 
 Arcadia checks every phase in the built-in browser before it counts as done, on their own PC (decided 2026-10-23):
 
-- A Remote Control session on "samy-rog" pulls the phase branch (or `main`) into `C:\Projects\Orrery-main`, runs `npm install` and `npm start`, and opens `http://localhost:4200` in the built-in browser.
+- A Remote Control session on "samy-rog" pulls the phase branch (or `main`) into the git clone `C:\Projects\Orrery-phase1`, runs `npm install` and `npm start`, and opens `http://localhost:4200` in the built-in browser.
 - This happens before the phase PR is merged, so problems are caught on the branch.
 - There is no hosted preview link. The public live site (GitHub Pages, from `main`) is a separate step.
 
@@ -110,7 +110,7 @@ Leftovers carried into Phase 1: label overlap in the dense core region; the READ
 
 - Folder picker (File System Access API, with `<input webkitdirectory>` fallback).
 - Filtering of `node_modules`, `dist`, `.git` and non-source files; `tsconfig.json` read for aliases.
-- Limits **(proposed)**: 5,000 files, 50 MB total, 1 MB per file, each with a clear message.
+- Limits (confirmed 2026-10-23): 5,000 source files, 50 MB total, 1 MB per file, each with a clear message.
 - The same analyser running in a Web Worker, with progress and cancel.
 - Report of unresolved imports and skipped files.
 - Playwright test on a fixture project.
