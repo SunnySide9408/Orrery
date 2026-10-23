@@ -4,7 +4,10 @@
   "private": true,
   "description": "Parses Angular sources with the TypeScript compiler API into an analysis result. Runs in Node (CLI) and in a Web Worker.",
   "type": "module",
-  "exports": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./select-files": "./src/select-files.ts"
+  },
   "scripts": {
     "typecheck": "tsc --noEmit"
   },

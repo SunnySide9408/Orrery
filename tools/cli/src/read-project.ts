@@ -1,9 +1,6 @@
 import { readdir, readFile } from 'node:fs/promises';
 import { join, relative, sep } from 'node:path';
-import type { ProjectFile } from '@orrery/analyzer-angular';
-
-/** Folders that never hold the app's own source. */
-const SKIPPED_DIRS = new Set(['node_modules', 'dist', '.git', '.angular', 'coverage', 'out-tsc']);
+import { isIgnoredFolder, isSourcePath, type ProjectFile } from '@orrery/analyzer-angular';
 
 /**
  * Reads the files the analyser needs: `.ts` sources under `include`, plus the
@@ -31,9 +28,8 @@ export async function readProject(
     entries.sort((a, b) => (a.name < b.name ? -1 : 1));
     for (const entry of entries) {
       const path = join(dir, entry.name);
-      if (entry.isDirectory() && !SKIPPED_DIRS.has(entry.name)) await walk(path);
-      else if (entry.isFile() && entry.name.endsWith('.ts') && !entry.name.endsWith('.d.ts'))
-        await add(path);
+      if (entry.isDirectory() && !isIgnoredFolder(entry.name)) await walk(path);
+      else if (entry.isFile() && isSourcePath(entry.name)) await add(path);
     }
   };
   for (const folder of include) await walk(join(root, folder));
