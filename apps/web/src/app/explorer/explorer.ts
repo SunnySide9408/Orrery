@@ -11,16 +11,35 @@ import {
   untracked,
   viewChild,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { NODE_KINDS } from '@orrery/contracts';
 import { KindMarker } from '../renderer/kind-marker';
 import { KIND_STYLES } from '../renderer/kind-style';
+import type { GraphicsQuality, GraphicsSetting } from '../renderer/quality';
 import { SYSTEM_RENDERER, type SystemRenderer } from '../renderer/system-renderer';
 import { ExplorerState } from '../shell/explorer-state';
 
 /** Width of the inspector panel (w-80 plus its margin); on narrow screens it covers the map anyway. */
 function inspectorInset(): number {
   return window.innerWidth >= 768 ? 344 : 0;
+}
+
+/** The visitor's graphics choice, kept per browser. Storage can be missing or blocked. */
+const GRAPHICS_KEY = 'orrery.graphics';
+function storedGraphics(): GraphicsSetting {
+  try {
+    const value = localStorage.getItem(GRAPHICS_KEY);
+    return value === 'full' || value === 'lite' ? value : 'auto';
+  } catch {
+    return 'auto';
+  }
+}
+function storeGraphics(value: GraphicsQuality): void {
+  try {
+    localStorage.setItem(GRAPHICS_KEY, value);
+  } catch {
+    // Not remembered; the choice still applies until the page closes.
+  }
 }
 
 /** The 3D map. Angular decides what is selected and related; the renderer only draws it. */
@@ -77,6 +96,21 @@ function inspectorInset(): number {
       <p class="mt-1.5 text-slate-300">
         Planet size: lines of code. Each region has its own star. Dashed ring: lazy route.
       </p>
+      @if (quality(); as q) {
+        <p class="mt-1 flex items-center gap-2 text-slate-300">
+          <button
+            type="button"
+            class="pointer-events-auto rounded border border-slate-600 px-1.5 py-0.5 hover:bg-slate-800 focus-visible:outline-2 focus-visible:outline-sky-400"
+            [attr.aria-pressed]="q.quality === 'lite'"
+            (click)="toggleLite()"
+          >
+            Lite graphics: {{ q.quality === 'lite' ? 'on' : 'off' }}
+          </button>
+          @if (q.automatic && q.quality === 'lite') {
+            <span>Turned on to keep the map smooth on this device.</span>
+          }
+        </p>
+      }
       @if (state.focus(); as f) {
         <p class="mt-1 text-slate-300">
           <span class="text-amber-300">Amber</span> lines: files that depend on it.
@@ -97,6 +131,11 @@ export class Explorer {
 
   protected readonly sample = this.state.sample;
   protected readonly webglFailed = signal(false);
+  /** What the renderer reports, so the toggle shows the quality really in use. */
+  protected readonly quality = signal<{ quality: GraphicsQuality; automatic: boolean } | null>(
+    null,
+  );
+  private readonly route = inject(ActivatedRoute);
 
   protected readonly legend = computed(() =>
     NODE_KINDS.filter((kind) =>
@@ -120,22 +159,25 @@ export class Explorer {
         renderer = this.createRenderer();
         renderer.initialize(this.sceneHost().nativeElement, {
           nodePicked: (id) => this.state.select(id),
+          qualityChanged: (quality, automatic) => this.quality.set({ quality, automatic }),
         });
       } catch (error) {
         console.error(error);
         this.webglFailed.set(true);
         return;
       }
-      const { result, layout } = this.sample();
-      renderer.setGraph(result.graph, layout);
+      renderer.setQuality(storedGraphics());
+      // `?fps` shows the frame-rate readout, for performance checks.
+      renderer.setFrameRateVisible(this.route.snapshot.queryParamMap.has('fps'));
 
+      // Before the graph, so a reduced-motion visitor never sees the opening reveal.
       const motion = window.matchMedia?.('(prefers-reduced-motion: reduce)');
       const onMotionChange = () => renderer.setReducedMotion(motion?.matches ?? false);
       onMotionChange();
       motion?.addEventListener('change', onMotionChange);
 
       this.renderer = renderer;
-      this.applyFocus();
+      this.applyGraph();
 
       destroyRef.onDestroy(() => {
         motion?.removeEventListener('change', onMotionChange);
@@ -144,11 +186,34 @@ export class Explorer {
       });
     });
 
+    // A different sample in the same route (e.g. /realworld to /perf) replaces the graph.
+    effect(() => {
+      this.sample();
+      untracked(() => this.applyGraph());
+    });
     effect(() => this.applyFocus());
     effect(() => {
       // "Reset view": back to the overview camera, whatever is selected.
       if (this.state.resets() > 0) untracked(() => this.renderer?.focusNode(null));
     });
+  }
+
+  protected toggleLite(): void {
+    const next = this.quality()?.quality === 'lite' ? 'full' : 'lite';
+    storeGraphics(next);
+    this.renderer?.setQuality(next);
+  }
+
+  private shownSample: unknown = null;
+
+  /** Sends the sample to the renderer once per sample, then the current selection. */
+  private applyGraph(): void {
+    const sample = this.sample();
+    const renderer = this.renderer;
+    if (!renderer || sample === this.shownSample) return;
+    this.shownSample = sample;
+    renderer.setGraph(sample.result.graph, sample.layout);
+    this.applyFocus();
   }
 
   /** Pushes the current selection across the renderer boundary. */
@@ -160,6 +225,11 @@ export class Explorer {
     // Highlight first: the camera frames the focused node with its highlighted neighbours.
     renderer.highlightNodes(focus?.litNodeIds ?? new Set(), focus?.waves);
     renderer.focusNode(focus?.node.id ?? null);
-    renderer.showEdges(focus?.edgeIds ?? new Set(), focus?.waves);
+    // The frame-rate test map draws every edge with nothing selected: the worst case.
+    const allEdges =
+      !focus && this.sample().info.id === 'perf'
+        ? new Set(this.sample().result.graph.edges.map((edge) => edge.id))
+        : null;
+    renderer.showEdges(allEdges ?? focus?.edgeIds ?? new Set(), focus?.waves);
   }
 }

@@ -161,6 +161,8 @@ Delivered in the planet-look pull request; see docs/decisions/0009.
 
 ## Phase 4 · Cinematic polish
 
+Delivered in the phase-4-motion pull request; see docs/decisions/0010. Baseline device: Arcadia's PC "samy-rog", NVIDIA GeForce RTX 4070 Laptop GPU.
+
 **Goal:** smooth effects that never block controls. The look itself was settled in the planet look pass, so this phase is about motion and speed.
 
 **Deliverables**

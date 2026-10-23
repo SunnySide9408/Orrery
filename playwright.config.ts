@@ -1,5 +1,15 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const chromium = {
+  ...devices['Desktop Chrome'],
+  launchOptions: {
+    // Headless CI machines have no GPU; SwiftShader renders WebGL in software.
+    args: ['--enable-unsafe-swiftshader', '--use-angle=swiftshader'],
+    // Lets a machine with a preinstalled Chromium skip the download.
+    executablePath: process.env['PLAYWRIGHT_CHROMIUM_PATH'] || undefined,
+  },
+};
+
 /**
  * End-to-end tests run against the production build, served like a static
  * host, so the service worker and real sample loading are covered.
@@ -19,15 +29,15 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: {
-        ...devices['Desktop Chrome'],
-        launchOptions: {
-          // Headless CI machines have no GPU; SwiftShader renders WebGL in software.
-          args: ['--enable-unsafe-swiftshader', '--use-angle=swiftshader'],
-          // Lets a machine with a preinstalled Chromium skip the download.
-          executablePath: process.env['PLAYWRIGHT_CHROMIUM_PATH'] || undefined,
-        },
-      },
+      testIgnore: ['fixtures/**', 'lifecycle.spec.ts'],
+      use: chromium,
+    },
+    {
+      // Heavy on the CPU, so it runs alone after the rest.
+      name: 'lifecycle',
+      testMatch: 'lifecycle.spec.ts',
+      dependencies: ['chromium'],
+      use: chromium,
     },
   ],
   webServer: {

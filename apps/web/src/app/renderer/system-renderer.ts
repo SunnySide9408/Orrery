@@ -1,10 +1,16 @@
 import { InjectionToken } from '@angular/core';
 import type { DependencyGraph, Layout } from '@orrery/contracts';
+import type { GraphicsQuality, GraphicsSetting } from './quality';
 
 /** What the scene reports back to Angular. */
 export interface SystemRendererEvents {
   /** A planet was clicked, or empty space was clicked (`null`). */
   nodePicked(nodeId: string | null): void;
+  /**
+   * The quality in use changed, or was confirmed after `setQuality`.
+   * `automatic` is true when the renderer chose it (a slow or software GPU).
+   */
+  qualityChanged?(quality: GraphicsQuality, automatic: boolean): void;
 }
 
 /**
@@ -37,7 +43,18 @@ export interface SystemRenderer {
    * tree) and appears with the wave of its source. Call after `highlightNodes`.
    */
   showEdges(edgeIds: ReadonlySet<string>, waves?: ReadonlyMap<string, number> | null): void;
+  /**
+   * Reduced motion: no formation reveal, no glides, no spin, impact shown at
+   * once. Call before `setGraph`, so the first view does not animate either.
+   */
   setReducedMotion(enabled: boolean): void;
+  /**
+   * `full` (glow), `lite` (no glow, 1× pixels), or `auto`: full, stepping
+   * down to lite once if the frame rate stays low or the GPU is software.
+   */
+  setQuality(setting: GraphicsSetting): void;
+  /** A small frame-rate and draw-call readout over the map, for performance checks. */
+  setFrameRateVisible(visible: boolean): void;
   /**
    * Pixels on the right covered by UI (the inspector). The view centres and
    * frames content in the space that is left. Call before `focusNode`.

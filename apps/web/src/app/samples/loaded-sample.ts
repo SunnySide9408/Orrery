@@ -45,8 +45,14 @@ export class SampleLoader {
   }
 }
 
-/** Loads the sample named in the URL; unknown names go to the default sample. */
+/** Loads the sample named in the URL; unknown names go to the default sample. `perf` is the frame-rate test map. */
 export const sampleResolver: ResolveFn<LoadedSample> = (route) => {
+  // The frame-rate test map is generated, not fetched, and loaded only when asked for.
+  if (route.paramMap.get('sample') === 'perf') {
+    return import('./perf-sample').then((m) =>
+      prepareSample(m.PERF_SAMPLE_INFO, m.createPerfSample()),
+    );
+  }
   const info = SAMPLE_CATALOG.find((sample) => sample.id === route.paramMap.get('sample'));
   if (!info) {
     return new RedirectCommand(inject(Router).parseUrl(`/${DEFAULT_SAMPLE_ID}`));

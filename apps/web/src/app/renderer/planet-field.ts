@@ -41,7 +41,7 @@ export interface PlanetBody {
 
 /** Per-instance attributes, as [item size, dynamic]. */
 const ATTRIBUTES = {
-  aPos: [3, false],
+  aPos: [3, true],
   aRadius: [1, true],
   aSeed: [4, false],
   aColor: [3, false],
@@ -67,6 +67,7 @@ export class PlanetField {
   /** Ring instance per planet index, or -1. */
   private readonly ringOf: number[];
   private readonly baseRadius: number[];
+  private moved = false;
   private readonly sphere = new SphereGeometry(1, 48, 32);
   private readonly ringShape = new RingGeometry(1.3, 2.7, 96, 1).rotateX(-Math.PI / 2);
 
@@ -120,9 +121,12 @@ export class PlanetField {
     this.uniforms.uTime.value = seconds;
   }
 
-  /** Shows or hides a planet, and lights or fades it. Call `commit` after a batch. */
-  setInstance(index: number, visible: boolean, lit: boolean): void {
-    const radius = visible ? this.baseRadius[index]! : 0;
+  /**
+   * Shows or hides a planet, and lights or fades it. `scale` grows it in
+   * during the formation reveal. Call `commit` after a batch.
+   */
+  setInstance(index: number, visible: boolean, lit: boolean, scale = 1): void {
+    const radius = visible ? this.baseRadius[index]! * scale : 0;
     const dim = lit ? 1 : 0;
     for (const geometry of [this.surface.geometry, this.atmosphere.geometry]) {
       write(geometry, 'aRadius', index, radius);
@@ -135,11 +139,23 @@ export class PlanetField {
     }
   }
 
+  /** Moves a planet, for the formation reveal. Call `commit` after a batch. */
+  setPosition(index: number, position: Vector3): void {
+    for (const geometry of [this.surface.geometry, this.atmosphere.geometry]) {
+      position.toArray(geometry.getAttribute('aPos').array, index * 3);
+    }
+    const ring = this.ringOf[index]!;
+    if (ring >= 0) position.toArray(this.rings.geometry.getAttribute('aPos').array, ring * 3);
+    this.moved = true;
+  }
+
   commit(): void {
     for (const mesh of [this.surface, this.atmosphere, this.rings]) {
       mesh.geometry.getAttribute('aRadius').needsUpdate = true;
       mesh.geometry.getAttribute('aDim').needsUpdate = true;
+      if (this.moved) mesh.geometry.getAttribute('aPos').needsUpdate = true;
     }
+    this.moved = false;
   }
 
   dispose(): void {
