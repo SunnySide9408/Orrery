@@ -43,9 +43,10 @@ interface PooledLabel {
  * Node labels come from a fixed pool, so a map of 5,000 files still has at
  * most {@link POOL_SIZE} label elements. Each label tries four spots around
  * its planet (above, below, right, left) and takes the first that does not
- * overlap a label placed before it; if none is free it is hidden. Region
- * labels are placed first, then node labels in the order they are requested,
- * so the focused and hovered nodes always win.
+ * overlap a label placed before it; if none is free it is hidden. Panels
+ * over the map are taken first, then region labels (centred under their
+ * ring, nudged aside when two rings are close), then node labels in the order
+ * they are requested, so the focused and hovered nodes always win.
  *
  * Sizes are measured once per text and cached: reading layout every frame
  * would force the browser to recalculate styles each time.
@@ -87,7 +88,7 @@ export class LabelLayer {
 
   /**
    * Places region labels and up to {@link POOL_SIZE} node labels for this
-   * frame. Node labels also keep out of `keepClear`, the panels over the map.
+   * frame. All labels keep out of `keepClear`, the panels over the map.
    */
   update(
     camera: PerspectiveCamera,
@@ -100,6 +101,9 @@ export class LabelLayer {
     // Pixels per world unit at distance 1, for the planet's size on screen.
     const focal = height / (2 * Math.tan((camera.fov * Math.PI) / 360));
 
+    // Panels over the map first: a label under the legend would be unreadable anyway.
+    taken.push(...keepClear);
+
     for (const region of this.regions) {
       const point = this.toScreen(region.position, camera, width, height);
       const size = point && this.measure(region.element, `region:${region.element.textContent}`);
@@ -107,13 +111,18 @@ export class LabelLayer {
         this.hide(region);
         continue;
       }
-      const box = centred(point.x, point.y, size);
-      // Region labels are never hidden for each other: they mark where things are.
+      // Region labels go first, centred under their ring, or nudged aside when two rings are close.
+      const centre = centred(point.x, point.y, size);
+      const box = taken.some((other) => overlaps(centre, other))
+        ? this.place(point.x, point.y, 0, size, taken)
+        : centre;
+      if (!box) {
+        this.hide(region);
+        continue;
+      }
       taken.push(box);
       this.show(region, box);
     }
-
-    taken.push(...keepClear);
 
     // Reuse the element that already shows a node, so its content stays put.
     const byNode = new Map<string, PooledLabel>();
