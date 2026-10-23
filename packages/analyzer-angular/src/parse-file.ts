@@ -1,5 +1,5 @@
 import ts from 'typescript';
-import type { NodeKind } from '@orrery/contracts';
+import type { NodeKind, ProviderScope } from '@orrery/contracts';
 
 /** One `import` or `export ... from` in a file. */
 export interface ImportFact {
@@ -21,6 +21,19 @@ export interface StandaloneImportFact {
   line: number;
 }
 
+/** A class or token asked for through dependency injection. */
+export interface InjectionFact {
+  name: string;
+  line: number;
+}
+
+/** A class or token listed in a `providers` array, or the file's own `providedIn`. */
+export interface ProviderFact {
+  name: string;
+  scope: ProviderScope;
+  line: number;
+}
+
 /** Everything the analyser needs from one file, read from its syntax tree only. */
 export interface FileFacts {
   kind: NodeKind;
@@ -30,6 +43,12 @@ export interface FileFacts {
   imports: readonly ImportFact[];
   lazyRoutes: readonly LazyRouteFact[];
   standaloneImports: readonly StandaloneImportFact[];
+  /** `inject(X)` calls and constructor parameters typed `X` or marked `@Inject(X)`. */
+  injections: readonly InjectionFact[];
+  /** Entries of `providers` and `viewProviders` arrays, and `@Injectable({ providedIn })`. */
+  providers: readonly ProviderFact[];
+  /** Classes declared in this file, so a provider listed next to its class resolves to it. */
+  classNames: readonly string[];
 }
 
 const ANGULAR_CORE = '@angular/core';
@@ -68,6 +87,22 @@ const TYPE_KINDS: Readonly<Record<string, NodeKind>> = {
 /** Decorator properties whose array lists standalone or module imports. */
 const IMPORT_ARRAY_DECORATORS = new Set(['Component', 'Directive', 'NgModule']);
 
+/** `providedIn` values written as strings. */
+const PROVIDED_IN_SCOPES: Readonly<Record<string, ProviderScope>> = {
+  root: 'root',
+  platform: 'platform',
+  any: 'any',
+};
+
+/** Object properties that make an object literal a route. */
+const ROUTE_PROPERTIES = new Set([
+  'path',
+  'loadChildren',
+  'loadComponent',
+  'children',
+  'component',
+]);
+
 /**
  * Reads the Angular facts of one file. It only parses: no type checker, no
  * program, nothing executed. That keeps it fast and identical in Node and in a
@@ -81,6 +116,10 @@ export function parseFile(path: string, text: string): FileFacts {
   const imports: ImportFact[] = [];
   const lazyRoutes: LazyRouteFact[] = [];
   const standaloneImports: StandaloneImportFact[] = [];
+  const injections: InjectionFact[] = [];
+  const providers: ProviderFact[] = [];
+  const classNames: string[] = [];
+  const spec = isSpecPath(path);
   /** Local names imported from `@angular/core`, mapped to their exported name. */
   const angularCore = new Map<string, string>();
 
@@ -112,6 +151,7 @@ export function parseFile(path: string, text: string): FileFacts {
   const visit = (node: ts.Node): void => {
     if (ts.isClassDeclaration(node)) {
       const className = node.name?.text ?? null;
+      if (className) classNames.push(className);
       if (firstExport === null && className && isExported(node)) firstExport = className;
 
       for (const decorator of ts.canHaveDecorators(node) ? (ts.getDecorators(node) ?? []) : []) {
@@ -135,6 +175,37 @@ export function parseFile(path: string, text: string): FileFacts {
             }
           }
         }
+        if (decoratorName === 'Injectable' && className) {
+          const providedIn = objectProperty(call, 'providedIn');
+          const scope = providedIn && providedInScope(providedIn);
+          if (scope) providers.push({ name: className, scope, line: lineOf(decorator) });
+        }
+      }
+    } else if (ts.isConstructorDeclaration(node)) {
+      for (const parameter of node.parameters) {
+        const name = injectedParameter(parameter, angularCore);
+        if (name) injections.push({ name, line: lineOf(parameter) });
+      }
+    } else if (
+      ts.isCallExpression(node) &&
+      ts.isIdentifier(node.expression) &&
+      angularCore.get(node.expression.text) === 'inject' &&
+      node.arguments[0] &&
+      ts.isIdentifier(node.arguments[0])
+    ) {
+      injections.push({ name: node.arguments[0].text, line: lineOf(node) });
+    } else if (
+      !spec &&
+      ts.isPropertyAssignment(node) &&
+      ts.isIdentifier(node.name) &&
+      (node.name.text === 'providers' || node.name.text === 'viewProviders') &&
+      ts.isArrayLiteralExpression(node.initializer)
+    ) {
+      // Test modules (`TestBed.configureTestingModule`) are not app providers, hence `!spec`.
+      const scope = providersScope(node, angularCore);
+      for (const element of node.initializer.elements) {
+        const name = providedName(element);
+        if (name) providers.push({ name, scope, line: lineOf(element) });
       }
     } else if (ts.isFunctionDeclaration(node) && node.name && isExported(node)) {
       firstExport ??= node.name.text;
@@ -173,6 +244,9 @@ export function parseFile(path: string, text: string): FileFacts {
     imports,
     lazyRoutes,
     standaloneImports,
+    injections,
+    providers,
+    classNames,
   };
 }
 
@@ -247,6 +321,101 @@ function arrayProperty(call: ts.CallExpression, property: string): readonly ts.E
     }
   }
   return [];
+}
+
+function objectProperty(call: ts.CallExpression, property: string): ts.Expression | null {
+  const options = call.arguments[0];
+  if (!options || !ts.isObjectLiteralExpression(options)) return null;
+  for (const member of options.properties) {
+    if (
+      ts.isPropertyAssignment(member) &&
+      ts.isIdentifier(member.name) &&
+      member.name.text === property
+    ) {
+      return member.initializer;
+    }
+  }
+  return null;
+}
+
+/** `'root'`, `'platform'`, `'any'`, or a module class. */
+function providedInScope(value: ts.Expression): ProviderScope | null {
+  if (ts.isStringLiteralLike(value)) return PROVIDED_IN_SCOPES[value.text] ?? null;
+  return ts.isIdentifier(value) ? 'module' : null;
+}
+
+/**
+ * What a constructor parameter asks the injector for: the `@Inject(X)` token
+ * when there is one, else the class in its type annotation. Generic and
+ * union types are skipped; without a type checker they cannot be read safely.
+ */
+function injectedParameter(
+  parameter: ts.ParameterDeclaration,
+  angularCore: ReadonlyMap<string, string>,
+): string | null {
+  for (const decorator of ts.canHaveDecorators(parameter)
+    ? (ts.getDecorators(parameter) ?? [])
+    : []) {
+    const call = decorator.expression;
+    if (
+      ts.isCallExpression(call) &&
+      ts.isIdentifier(call.expression) &&
+      angularCore.get(call.expression.text) === 'Inject'
+    ) {
+      const token = call.arguments[0];
+      return token && ts.isIdentifier(token) ? token.text : null;
+    }
+  }
+  const type = parameter.type;
+  return type &&
+    ts.isTypeReferenceNode(type) &&
+    ts.isIdentifier(type.typeName) &&
+    !type.typeArguments
+    ? type.typeName.text
+    : null;
+}
+
+/** Where a `providers: [...]` array sits decides the scope of what it provides. */
+function providersScope(
+  assignment: ts.PropertyAssignment,
+  angularCore: ReadonlyMap<string, string>,
+): ProviderScope {
+  const options = assignment.parent;
+  const call = options.parent;
+  if (
+    call &&
+    ts.isCallExpression(call) &&
+    ts.isDecorator(call.parent) &&
+    ts.isIdentifier(call.expression)
+  ) {
+    const decorator = angularCore.get(call.expression.text);
+    if (decorator === 'NgModule') return 'module';
+    if (decorator === 'Component' || decorator === 'Directive') return 'component';
+  }
+  const isRoute = options.properties.some(
+    (member) =>
+      ts.isPropertyAssignment(member) &&
+      ts.isIdentifier(member.name) &&
+      ROUTE_PROPERTIES.has(member.name.text),
+  );
+  return isRoute ? 'route' : 'application';
+}
+
+/** `X` or `{ provide: X, … }`; factory calls such as `provideHttpClient()` are skipped. */
+function providedName(element: ts.Expression): string | null {
+  if (ts.isIdentifier(element)) return element.text;
+  if (!ts.isObjectLiteralExpression(element)) return null;
+  for (const member of element.properties) {
+    if (
+      ts.isPropertyAssignment(member) &&
+      ts.isIdentifier(member.name) &&
+      member.name.text === 'provide' &&
+      ts.isIdentifier(member.initializer)
+    ) {
+      return member.initializer.text;
+    }
+  }
+  return null;
 }
 
 function isDynamicImport(node: ts.Node): node is ts.CallExpression {

@@ -52,6 +52,34 @@ test('open the sample, search, select, and the inspector shows the right facts',
   await expect(inspector).toBeHidden();
 });
 
+test('UserService: who uses it, the full impact, and the finding with its evidence', async ({
+  page,
+}) => {
+  await page.goto('./realworld');
+  // One click from the overview answers "who uses UserService?".
+  await page.getByRole('button', { name: 'UserService', exact: true }).click();
+  const inspector = page.getByRole('complementary', { name: 'Inspector' });
+  await expect(inspector).toContainText(`Dependants (${dependants})`);
+  await expect(inspector).toContainText('Provided');
+  await expect(inspector).toContainText('root');
+  await expect(inspector).toContainText('according to static relationships');
+
+  await inspector.getByRole('button', { name: 'Show full impact' }).click();
+  await expect(page).toHaveURL(/impact=1/);
+  await expect(inspector.getByRole('button', { name: 'Show direct links only' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await expect(inspector.getByRole('heading', { name: /^Step 2/ })).toBeVisible();
+
+  await inspector.getByRole('link', { name: /High fan-in/ }).click();
+  await expect(page).toHaveURL(/\/realworld\/findings/);
+  const finding = page.getByTestId('finding').filter({ hasText: 'High fan-in' });
+  await expect(finding).toContainText('95th percentile');
+  await expect(finding).toContainText('Limits');
+  await expect(finding).toContainText(/line \d+/);
+});
+
 test('works offline once loaded', async ({ page, context }) => {
   await page.goto('./realworld');
   await expect(page.getByText(`${sample.graph.nodes.length} files ·`)).toBeVisible();

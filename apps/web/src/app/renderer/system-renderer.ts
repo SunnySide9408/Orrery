@@ -25,10 +25,18 @@ export interface SystemRenderer {
    * `highlightNodes` first.
    */
   focusNode(nodeId: string | null): void;
-  /** Brighten these nodes and fade the rest. An empty set shows everything normally. */
-  highlightNodes(nodeIds: ReadonlySet<string>): void;
-  /** Draw only these edges. Edges are hidden by default to keep the overview calm. */
-  showEdges(edgeIds: ReadonlySet<string>): void;
+  /**
+   * Brighten these nodes and fade the rest. An empty set shows everything
+   * normally. With `waves` (graph distance per node), nodes light up one
+   * distance at a time, nearest first; reduced motion shows them all at once.
+   */
+  highlightNodes(nodeIds: ReadonlySet<string>, waves?: ReadonlyMap<string, number> | null): void;
+  /**
+   * Draw only these edges. Edges are hidden by default to keep the overview
+   * calm. With `waves`, every edge points towards the focused node (an impact
+   * tree) and appears with the wave of its source. Call after `highlightNodes`.
+   */
+  showEdges(edgeIds: ReadonlySet<string>, waves?: ReadonlyMap<string, number> | null): void;
   setReducedMotion(enabled: boolean): void;
   /**
    * Pixels on the right covered by UI (the inspector). The view centres and

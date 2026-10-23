@@ -21,6 +21,7 @@ The node's name is the decorated class or typed function, else the first export,
 - `import`: every `import`/`export … from` and every other `import()` of a project file.
 - `standalone-import`: a class listed in `imports: [...]` of `@Component`, `@Directive` or `@NgModule`, matched to the file it was imported from. It sits next to the plain import edge on purpose: one says "the file mentions it", the other "the template can use it".
 - `lazy-route`: an `import()` inside `loadComponent` or `loadChildren`.
+- `inject` (Phase 3): `inject(X)`, a constructor parameter typed `X`, or `@Inject(X)`. See docs/decisions/0008.
 
 Specifiers resolve like TypeScript's bundler resolution: relative paths, `.ts`/`/index.ts`, `.js` written for `.ts`, `paths` aliases and `baseUrl` from `tsconfig.json` (following relative `extends`). A bare specifier that matches no project file is a package and is ignored. A relative or aliased one that matches nothing goes into `unresolved` with the file, line and reason; the app shows the count.
 
@@ -33,6 +34,6 @@ Specifiers resolve like TypeScript's bundler resolution: relative paths, `.ts`/`
 ## Limits
 
 - No type information: a class decorated through a re-exported alias of `Component`, or a guard typed through a custom alias, is labelled "other".
-- Template usage without an `imports` entry (NgModule declarations elsewhere) is not an edge. Template and DI edges are later phases.
+- Template usage without an `imports` entry (NgModule declarations elsewhere) is not an edge. Template edges are a later phase; DI edges came in Phase 3 (docs/decisions/0008).
 - Dynamic specifiers (`import(variable)`) are skipped.
 - TypeScript 7 replaces the JavaScript compiler API with a native one; the analyser stays on TypeScript 6 until that API settles.

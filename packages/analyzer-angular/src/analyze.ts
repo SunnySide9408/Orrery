@@ -8,15 +8,17 @@ import {
   type EdgeKind,
   type GraphEdge,
   type GraphNode,
+  type ProviderSite,
   type Region,
   type SourceLocation,
   type UnresolvedItem,
 } from '@orrery/contracts';
+import { computeFindings } from '@orrery/graph-core';
 import { isSpecPath, parseFile, type FileFacts } from './parse-file';
 import { dirname, readPathOptions, resolveSpecifier } from './resolve';
 
 /** Bump when the output for the same source changes. */
-export const ANALYZER_VERSION = '0.1.0';
+export const ANALYZER_VERSION = '0.2.0';
 
 export interface ProjectFile {
   /** Relative to the project root. */
@@ -72,6 +74,7 @@ export function analyzeAngularProject(
   const unresolved: UnresolvedItem[] = [];
   /** Lazy-route targets, the region seeds. */
   const lazyTargets = new Set<string>();
+  const providersOf = new Map<string, ProviderSite[]>();
 
   const addEdge = (kind: EdgeKind, source: string, target: string, evidence: SourceLocation) => {
     if (source === target) return;
@@ -116,6 +119,18 @@ export function analyzeAngularProject(
       if (target !== undefined)
         addEdge('standalone-import', path, target, { path, line: fact.line });
     }
+    for (const fact of fileFacts.injections) {
+      const target = importedFrom.get(fact.name);
+      if (target !== undefined) addEdge('inject', path, target, { path, line: fact.line });
+    }
+    for (const fact of fileFacts.providers) {
+      const target =
+        importedFrom.get(fact.name) ?? (fileFacts.classNames.includes(fact.name) ? path : null);
+      if (target === null) continue;
+      const sites = providersOf.get(target) ?? [];
+      sites.push({ scope: fact.scope, location: { path, line: fact.line } });
+      providersOf.set(target, sites);
+    }
   }
 
   const ownerOf = new Map<string, string>();
@@ -142,8 +157,19 @@ export function analyzeAngularProject(
       metrics: { linesOfCode: fileFacts.linesOfCode },
     };
     if (owner !== undefined) node.ownerId = nodeId(owner);
+    const providers = providersOf.get(path);
+    if (providers) {
+      node.providers = providers.sort(
+        (a, b) => compare(a.location.path, b.location.path) || a.location.line - b.location.line,
+      );
+    }
     return node;
   });
+  const graph = {
+    nodes,
+    edges: [...edges.values()].sort((a, b) => compare(a.id, b.id)),
+    regions: [...regions].sort((a, b) => compare(a.id, b.id)),
+  };
 
   return {
     schemaVersion: SCHEMA_VERSION,
@@ -151,12 +177,8 @@ export function analyzeAngularProject(
     ref: input.ref,
     analyzerVersion: ANALYZER_VERSION,
     createdAt: input.createdAt,
-    graph: {
-      nodes,
-      edges: [...edges.values()].sort((a, b) => compare(a.id, b.id)),
-      regions: [...regions].sort((a, b) => compare(a.id, b.id)),
-    },
-    findings: [],
+    graph,
+    findings: computeFindings(graph),
     unresolved: unresolved.sort(
       (a, b) =>
         compare(a.location.path, b.location.path) ||

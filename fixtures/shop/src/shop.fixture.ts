@@ -9,6 +9,7 @@ import {
   type NodeKind,
   type Region,
 } from '@orrery/contracts';
+import { computeFindings } from '@orrery/graph-core';
 
 /**
  * A hand-written analysis result for a small, imaginary Angular shop: an app
@@ -356,6 +357,14 @@ standaloneImports(orderList, 7, price, card);
 imports(accountService, api, auth);
 imports(loginPageSpec, loginPage, auth);
 
+// Phase 3: services that pages ask for through dependency injection.
+edge('inject', loginPage, auth, 12);
+edge('inject', profilePage, auth, 14);
+edge('inject', checkoutPage, cartService, 18);
+nodes.find((n) => n.id === auth)!.providers = [
+  { scope: 'root', location: { path: 'src/app/core/auth.service.ts', line: 5 } },
+];
+
 export const shopFixture: AnalysisResult = {
   schemaVersion: 1,
   project: { name: 'shop (fixture)' },
@@ -363,7 +372,7 @@ export const shopFixture: AnalysisResult = {
   analyzerVersion: 'hand-written',
   createdAt: '2026-10-23T00:00:00Z',
   graph: { regions, nodes, edges },
-  findings: [],
+  findings: computeFindings({ regions, nodes, edges }),
   unresolved: [
     {
       kind: 'import',

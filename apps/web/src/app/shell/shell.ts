@@ -87,6 +87,16 @@ import { Search } from './search';
           [class]="viewLinkClass"
           >List</a
         >
+        <a
+          routerLink="./findings"
+          [routerLinkActiveOptions]="exactPath"
+          routerLinkActive="bg-slate-700 text-white"
+          ariaCurrentWhenActive="page"
+          queryParamsHandling="preserve"
+          [class]="viewLinkClass"
+          >Findings
+          <span class="tabular-nums text-slate-400">{{ state.findings().length }}</span></a
+        >
       </nav>
     </header>
 
@@ -140,6 +150,7 @@ import { Search } from './search';
           <app-inspector
             [focus]="f"
             (selected)="state.select($event)"
+            (impactToggled)="state.setShowImpact($event)"
             (closed)="state.select(null)"
           />
         </aside>
@@ -169,7 +180,11 @@ export class Shell {
     const f = this.state.focus();
     if (!f) return `Overview of ${this.state.sample().info.name}.`;
     const users = f.dependants.length;
-    return `Selected ${f.node.name}, ${KIND_STYLES[f.node.kind].label}. Used directly by ${users} ${users === 1 ? 'file' : 'files'}.`;
+    const files = (n: number) => `${n} ${n === 1 ? 'file' : 'files'}`;
+    const impact = f.showImpact
+      ? ` Showing ${files(f.impactCount)} potentially affected, in ${f.impactWaves.length} steps.`
+      : '';
+    return `Selected ${f.node.name}, ${KIND_STYLES[f.node.kind].label}. Used directly by ${files(users)}.${impact}`;
   });
 
   protected readonly exactPath: IsActiveMatchOptions = {

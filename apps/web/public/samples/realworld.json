@@ -4,7 +4,7 @@
     "name": "Angular RealWorld (Conduit)"
   },
   "ref": "dd99ed2cf39c805d719f943c5d7061a5683d98a8",
-  "analyzerVersion": "0.1.0",
+  "analyzerVersion": "0.2.0",
   "createdAt": "2026-05-13T07:06:35.000Z",
   "graph": {
     "nodes": [
@@ -77,7 +77,16 @@
         "regionId": "folder:src/app/core",
         "metrics": {
           "linesOfCode": 13
-        }
+        },
+        "providers": [
+          {
+            "scope": "root",
+            "location": {
+              "path": "src/app/core/auth/services/jwt.service.ts",
+              "line": 3
+            }
+          }
+        ]
       },
       {
         "id": "src/app/core/auth/services/user.service.spec.ts",
@@ -98,7 +107,16 @@
         "regionId": "folder:src/app/core",
         "metrics": {
           "linesOfCode": 158
-        }
+        },
+        "providers": [
+          {
+            "scope": "root",
+            "location": {
+              "path": "src/app/core/auth/services/user.service.ts",
+              "line": 47
+            }
+          }
+        ]
       },
       {
         "id": "src/app/core/auth/user.model.ts",
@@ -309,7 +327,16 @@
         "regionId": "lazy-route:src/app/features/article",
         "metrics": {
           "linesOfCode": 44
-        }
+        },
+        "providers": [
+          {
+            "scope": "root",
+            "location": {
+              "path": "src/app/features/article/services/articles.service.ts",
+              "line": 8
+            }
+          }
+        ]
       },
       {
         "id": "src/app/features/article/services/comments.service.spec.ts",
@@ -330,7 +357,16 @@
         "regionId": "lazy-route:src/app/features/article",
         "metrics": {
           "linesOfCode": 22
-        }
+        },
+        "providers": [
+          {
+            "scope": "root",
+            "location": {
+              "path": "src/app/features/article/services/comments.service.ts",
+              "line": 7
+            }
+          }
+        ]
       },
       {
         "id": "src/app/features/article/services/tags.service.spec.ts",
@@ -351,7 +387,16 @@
         "regionId": "lazy-route:src/app/features/article",
         "metrics": {
           "linesOfCode": 11
-        }
+        },
+        "providers": [
+          {
+            "scope": "root",
+            "location": {
+              "path": "src/app/features/article/services/tags.service.ts",
+              "line": 6
+            }
+          }
+        ]
       },
       {
         "id": "src/app/features/profile/components/follow-button.component.ts",
@@ -432,7 +477,16 @@
         "regionId": "lazy-route:src/app/features/profile",
         "metrics": {
           "linesOfCode": 32
-        }
+        },
+        "providers": [
+          {
+            "scope": "root",
+            "location": {
+              "path": "src/app/features/profile/services/profile.service.ts",
+              "line": 14
+            }
+          }
+        ]
       },
       {
         "id": "src/app/features/settings/settings.component.ts",
@@ -1769,6 +1823,338 @@
         ]
       },
       {
+        "id": "inject:src/app/app.config.ts->src/app/core/auth/services/jwt.service.ts",
+        "sourceId": "src/app/app.config.ts",
+        "targetId": "src/app/core/auth/services/jwt.service.ts",
+        "kind": "inject",
+        "evidence": [
+          {
+            "path": "src/app/app.config.ts",
+            "line": 75
+          }
+        ]
+      },
+      {
+        "id": "inject:src/app/app.config.ts->src/app/core/auth/services/user.service.ts",
+        "sourceId": "src/app/app.config.ts",
+        "targetId": "src/app/core/auth/services/user.service.ts",
+        "kind": "inject",
+        "evidence": [
+          {
+            "path": "src/app/app.config.ts",
+            "line": 75
+          }
+        ]
+      },
+      {
+        "id": "inject:src/app/app.routes.ts->src/app/core/auth/services/user.service.ts",
+        "sourceId": "src/app/app.routes.ts",
+        "targetId": "src/app/core/auth/services/user.service.ts",
+        "kind": "inject",
+        "evidence": [
+          {
+            "path": "src/app/app.routes.ts",
+            "line": 11
+          },
+          {
+            "path": "src/app/app.routes.ts",
+            "line": 26
+          },
+          {
+            "path": "src/app/app.routes.ts",
+            "line": 31
+          }
+        ]
+      },
+      {
+        "id": "inject:src/app/core/auth/auth.component.ts->src/app/core/auth/services/user.service.ts",
+        "sourceId": "src/app/core/auth/auth.component.ts",
+        "targetId": "src/app/core/auth/services/user.service.ts",
+        "kind": "inject",
+        "evidence": [
+          {
+            "path": "src/app/core/auth/auth.component.ts",
+            "line": 32
+          }
+        ]
+      },
+      {
+        "id": "inject:src/app/core/auth/if-authenticated.directive.ts->src/app/core/auth/services/user.service.ts",
+        "sourceId": "src/app/core/auth/if-authenticated.directive.ts",
+        "targetId": "src/app/core/auth/services/user.service.ts",
+        "kind": "inject",
+        "evidence": [
+          {
+            "path": "src/app/core/auth/if-authenticated.directive.ts",
+            "line": 13
+          }
+        ]
+      },
+      {
+        "id": "inject:src/app/core/auth/services/user.service.ts->src/app/core/auth/services/jwt.service.ts",
+        "sourceId": "src/app/core/auth/services/user.service.ts",
+        "targetId": "src/app/core/auth/services/jwt.service.ts",
+        "kind": "inject",
+        "evidence": [
+          {
+            "path": "src/app/core/auth/services/user.service.ts",
+            "line": 70
+          }
+        ]
+      },
+      {
+        "id": "inject:src/app/core/interceptors/error.interceptor.ts->src/app/core/auth/services/user.service.ts",
+        "sourceId": "src/app/core/interceptors/error.interceptor.ts",
+        "targetId": "src/app/core/auth/services/user.service.ts",
+        "kind": "inject",
+        "evidence": [
+          {
+            "path": "src/app/core/interceptors/error.interceptor.ts",
+            "line": 33
+          }
+        ]
+      },
+      {
+        "id": "inject:src/app/core/interceptors/token.interceptor.ts->src/app/core/auth/services/jwt.service.ts",
+        "sourceId": "src/app/core/interceptors/token.interceptor.ts",
+        "targetId": "src/app/core/auth/services/jwt.service.ts",
+        "kind": "inject",
+        "evidence": [
+          {
+            "path": "src/app/core/interceptors/token.interceptor.ts",
+            "line": 6
+          }
+        ]
+      },
+      {
+        "id": "inject:src/app/core/layout/header.component.ts->src/app/core/auth/services/user.service.ts",
+        "sourceId": "src/app/core/layout/header.component.ts",
+        "targetId": "src/app/core/auth/services/user.service.ts",
+        "kind": "inject",
+        "evidence": [
+          {
+            "path": "src/app/core/layout/header.component.ts",
+            "line": 14
+          }
+        ]
+      },
+      {
+        "id": "inject:src/app/features/article/components/article-comment.component.ts->src/app/core/auth/services/user.service.ts",
+        "sourceId": "src/app/features/article/components/article-comment.component.ts",
+        "targetId": "src/app/core/auth/services/user.service.ts",
+        "kind": "inject",
+        "evidence": [
+          {
+            "path": "src/app/features/article/components/article-comment.component.ts",
+            "line": 47
+          }
+        ]
+      },
+      {
+        "id": "inject:src/app/features/article/components/article-list.component.ts->src/app/features/article/services/articles.service.ts",
+        "sourceId": "src/app/features/article/components/article-list.component.ts",
+        "targetId": "src/app/features/article/services/articles.service.ts",
+        "kind": "inject",
+        "evidence": [
+          {
+            "path": "src/app/features/article/components/article-list.component.ts",
+            "line": 101
+          }
+        ]
+      },
+      {
+        "id": "inject:src/app/features/article/components/favorite-button.component.ts->src/app/core/auth/services/user.service.ts",
+        "sourceId": "src/app/features/article/components/favorite-button.component.ts",
+        "targetId": "src/app/core/auth/services/user.service.ts",
+        "kind": "inject",
+        "evidence": [
+          {
+            "path": "src/app/features/article/components/favorite-button.component.ts",
+            "line": 47
+          }
+        ]
+      },
+      {
+        "id": "inject:src/app/features/article/components/favorite-button.component.ts->src/app/features/article/services/articles.service.ts",
+        "sourceId": "src/app/features/article/components/favorite-button.component.ts",
+        "targetId": "src/app/features/article/services/articles.service.ts",
+        "kind": "inject",
+        "evidence": [
+          {
+            "path": "src/app/features/article/components/favorite-button.component.ts",
+            "line": 45
+          }
+        ]
+      },
+      {
+        "id": "inject:src/app/features/article/pages/article/article.component.ts->src/app/core/auth/services/user.service.ts",
+        "sourceId": "src/app/features/article/pages/article/article.component.ts",
+        "targetId": "src/app/core/auth/services/user.service.ts",
+        "kind": "inject",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/article/article.component.ts",
+            "line": 65
+          }
+        ]
+      },
+      {
+        "id": "inject:src/app/features/article/pages/article/article.component.ts->src/app/features/article/services/articles.service.ts",
+        "sourceId": "src/app/features/article/pages/article/article.component.ts",
+        "targetId": "src/app/features/article/services/articles.service.ts",
+        "kind": "inject",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/article/article.component.ts",
+            "line": 62
+          }
+        ]
+      },
+      {
+        "id": "inject:src/app/features/article/pages/article/article.component.ts->src/app/features/article/services/comments.service.ts",
+        "sourceId": "src/app/features/article/pages/article/article.component.ts",
+        "targetId": "src/app/features/article/services/comments.service.ts",
+        "kind": "inject",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/article/article.component.ts",
+            "line": 63
+          }
+        ]
+      },
+      {
+        "id": "inject:src/app/features/article/pages/editor/editor.component.ts->src/app/core/auth/services/user.service.ts",
+        "sourceId": "src/app/features/article/pages/editor/editor.component.ts",
+        "targetId": "src/app/core/auth/services/user.service.ts",
+        "kind": "inject",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/editor/editor.component.ts",
+            "line": 40
+          }
+        ]
+      },
+      {
+        "id": "inject:src/app/features/article/pages/editor/editor.component.ts->src/app/features/article/services/articles.service.ts",
+        "sourceId": "src/app/features/article/pages/editor/editor.component.ts",
+        "targetId": "src/app/features/article/services/articles.service.ts",
+        "kind": "inject",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/editor/editor.component.ts",
+            "line": 37
+          }
+        ]
+      },
+      {
+        "id": "inject:src/app/features/article/pages/home/home.component.ts->src/app/core/auth/services/user.service.ts",
+        "sourceId": "src/app/features/article/pages/home/home.component.ts",
+        "targetId": "src/app/core/auth/services/user.service.ts",
+        "kind": "inject",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/home/home.component.ts",
+            "line": 38
+          }
+        ]
+      },
+      {
+        "id": "inject:src/app/features/article/pages/home/home.component.ts->src/app/features/article/services/tags.service.ts",
+        "sourceId": "src/app/features/article/pages/home/home.component.ts",
+        "targetId": "src/app/features/article/services/tags.service.ts",
+        "kind": "inject",
+        "evidence": [
+          {
+            "path": "src/app/features/article/pages/home/home.component.ts",
+            "line": 28
+          }
+        ]
+      },
+      {
+        "id": "inject:src/app/features/profile/components/follow-button.component.ts->src/app/core/auth/services/user.service.ts",
+        "sourceId": "src/app/features/profile/components/follow-button.component.ts",
+        "targetId": "src/app/core/auth/services/user.service.ts",
+        "kind": "inject",
+        "evidence": [
+          {
+            "path": "src/app/features/profile/components/follow-button.component.ts",
+            "line": 49
+          }
+        ]
+      },
+      {
+        "id": "inject:src/app/features/profile/components/follow-button.component.ts->src/app/features/profile/services/profile.service.ts",
+        "sourceId": "src/app/features/profile/components/follow-button.component.ts",
+        "targetId": "src/app/features/profile/services/profile.service.ts",
+        "kind": "inject",
+        "evidence": [
+          {
+            "path": "src/app/features/profile/components/follow-button.component.ts",
+            "line": 47
+          }
+        ]
+      },
+      {
+        "id": "inject:src/app/features/profile/components/profile-articles.component.ts->src/app/features/profile/services/profile.service.ts",
+        "sourceId": "src/app/features/profile/components/profile-articles.component.ts",
+        "targetId": "src/app/features/profile/services/profile.service.ts",
+        "kind": "inject",
+        "evidence": [
+          {
+            "path": "src/app/features/profile/components/profile-articles.component.ts",
+            "line": 24
+          }
+        ]
+      },
+      {
+        "id": "inject:src/app/features/profile/components/profile-favorites.component.ts->src/app/features/profile/services/profile.service.ts",
+        "sourceId": "src/app/features/profile/components/profile-favorites.component.ts",
+        "targetId": "src/app/features/profile/services/profile.service.ts",
+        "kind": "inject",
+        "evidence": [
+          {
+            "path": "src/app/features/profile/components/profile-favorites.component.ts",
+            "line": 24
+          }
+        ]
+      },
+      {
+        "id": "inject:src/app/features/profile/pages/profile/profile.component.ts->src/app/core/auth/services/user.service.ts",
+        "sourceId": "src/app/features/profile/pages/profile/profile.component.ts",
+        "targetId": "src/app/core/auth/services/user.service.ts",
+        "kind": "inject",
+        "evidence": [
+          {
+            "path": "src/app/features/profile/pages/profile/profile.component.ts",
+            "line": 37
+          }
+        ]
+      },
+      {
+        "id": "inject:src/app/features/profile/pages/profile/profile.component.ts->src/app/features/profile/services/profile.service.ts",
+        "sourceId": "src/app/features/profile/pages/profile/profile.component.ts",
+        "targetId": "src/app/features/profile/services/profile.service.ts",
+        "kind": "inject",
+        "evidence": [
+          {
+            "path": "src/app/features/profile/pages/profile/profile.component.ts",
+            "line": 38
+          }
+        ]
+      },
+      {
+        "id": "inject:src/app/features/settings/settings.component.ts->src/app/core/auth/services/user.service.ts",
+        "sourceId": "src/app/features/settings/settings.component.ts",
+        "targetId": "src/app/core/auth/services/user.service.ts",
+        "kind": "inject",
+        "evidence": [
+          {
+            "path": "src/app/features/settings/settings.component.ts",
+            "line": 42
+          }
+        ]
+      },
+      {
         "id": "lazy-route:src/app/app.routes.ts->src/app/core/auth/auth.component.ts",
         "sourceId": "src/app/app.routes.ts",
         "targetId": "src/app/core/auth/auth.component.ts",
@@ -2244,6 +2630,155 @@
       }
     ]
   },
-  "findings": [],
+  "findings": [
+    {
+      "id": "high-fan-out:src/app/features/article/pages/article/article.component.ts",
+      "category": "high-fan-out",
+      "severity": "info",
+      "nodeIds": [
+        "src/app/features/article/pages/article/article.component.ts"
+      ],
+      "explanation": "ArticleComponent depends directly on 16 files. It may be doing several jobs; this is a prompt to review, not a defect.",
+      "rule": "High fan-out: 10 or more files, the 95th percentile of this project or 10, whichever is higher",
+      "threshold": 10,
+      "limits": "Counts imports, standalone imports, lazy routes and injection. Specs are left out. Usage that only appears in templates is not seen.",
+      "evidencePaths": [
+        [
+          "src/app/features/article/pages/article/article.component.ts",
+          "src/app/core/auth/if-authenticated.directive.ts"
+        ],
+        [
+          "src/app/features/article/pages/article/article.component.ts",
+          "src/app/core/auth/services/user.service.ts"
+        ],
+        [
+          "src/app/features/article/pages/article/article.component.ts",
+          "src/app/core/auth/user.model.ts"
+        ],
+        [
+          "src/app/features/article/pages/article/article.component.ts",
+          "src/app/core/models/errors.model.ts"
+        ],
+        [
+          "src/app/features/article/pages/article/article.component.ts",
+          "src/app/features/article/components/article-comment.component.ts"
+        ],
+        [
+          "src/app/features/article/pages/article/article.component.ts",
+          "src/app/features/article/components/article-meta.component.ts"
+        ],
+        [
+          "src/app/features/article/pages/article/article.component.ts",
+          "src/app/features/article/components/favorite-button.component.ts"
+        ],
+        [
+          "src/app/features/article/pages/article/article.component.ts",
+          "src/app/features/article/models/article.model.ts"
+        ],
+        [
+          "src/app/features/article/pages/article/article.component.ts",
+          "src/app/features/article/models/comment.model.ts"
+        ],
+        [
+          "src/app/features/article/pages/article/article.component.ts",
+          "src/app/features/article/services/articles.service.ts"
+        ],
+        [
+          "src/app/features/article/pages/article/article.component.ts",
+          "src/app/features/article/services/comments.service.ts"
+        ],
+        [
+          "src/app/features/article/pages/article/article.component.ts",
+          "src/app/features/profile/components/follow-button.component.ts"
+        ],
+        [
+          "src/app/features/article/pages/article/article.component.ts",
+          "src/app/features/profile/models/profile.model.ts"
+        ],
+        [
+          "src/app/features/article/pages/article/article.component.ts",
+          "src/app/shared/components/list-errors.component.ts"
+        ],
+        [
+          "src/app/features/article/pages/article/article.component.ts",
+          "src/app/shared/pipes/default-image.pipe.ts"
+        ],
+        [
+          "src/app/features/article/pages/article/article.component.ts",
+          "src/app/shared/pipes/markdown.pipe.ts"
+        ]
+      ]
+    },
+    {
+      "id": "high-fan-in:src/app/core/auth/services/user.service.ts",
+      "category": "high-fan-in",
+      "severity": "info",
+      "nodeIds": [
+        "src/app/core/auth/services/user.service.ts"
+      ],
+      "explanation": "UserService is used directly by 14 files. A change here potentially affects all of them, according to static relationships.",
+      "rule": "High fan-in: 10 or more files, the 95th percentile of this project or 10, whichever is higher",
+      "threshold": 10,
+      "limits": "Counts imports, standalone imports, lazy routes and injection. Specs are left out. Usage that only appears in templates is not seen.",
+      "evidencePaths": [
+        [
+          "src/app/app.config.ts",
+          "src/app/core/auth/services/user.service.ts"
+        ],
+        [
+          "src/app/app.routes.ts",
+          "src/app/core/auth/services/user.service.ts"
+        ],
+        [
+          "src/app/core/auth/auth.component.ts",
+          "src/app/core/auth/services/user.service.ts"
+        ],
+        [
+          "src/app/core/auth/if-authenticated.directive.ts",
+          "src/app/core/auth/services/user.service.ts"
+        ],
+        [
+          "src/app/core/interceptors/error.interceptor.ts",
+          "src/app/core/auth/services/user.service.ts"
+        ],
+        [
+          "src/app/core/layout/header.component.ts",
+          "src/app/core/auth/services/user.service.ts"
+        ],
+        [
+          "src/app/features/article/components/article-comment.component.ts",
+          "src/app/core/auth/services/user.service.ts"
+        ],
+        [
+          "src/app/features/article/components/favorite-button.component.ts",
+          "src/app/core/auth/services/user.service.ts"
+        ],
+        [
+          "src/app/features/article/pages/article/article.component.ts",
+          "src/app/core/auth/services/user.service.ts"
+        ],
+        [
+          "src/app/features/article/pages/editor/editor.component.ts",
+          "src/app/core/auth/services/user.service.ts"
+        ],
+        [
+          "src/app/features/article/pages/home/home.component.ts",
+          "src/app/core/auth/services/user.service.ts"
+        ],
+        [
+          "src/app/features/profile/components/follow-button.component.ts",
+          "src/app/core/auth/services/user.service.ts"
+        ],
+        [
+          "src/app/features/profile/pages/profile/profile.component.ts",
+          "src/app/core/auth/services/user.service.ts"
+        ],
+        [
+          "src/app/features/settings/settings.component.ts",
+          "src/app/core/auth/services/user.service.ts"
+        ]
+      ]
+    }
+  ],
   "unresolved": []
 }
