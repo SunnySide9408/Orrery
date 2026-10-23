@@ -42,8 +42,9 @@ interface PooledLabel {
  *
  * Node labels come from a fixed pool, so a map of 5,000 files still has at
  * most {@link POOL_SIZE} label elements. Each label tries four spots around
- * its planet (above, below, right, left) and takes the first that does not
- * overlap a label placed before it; if none is free it is hidden. Panels
+ * its planet (above, below, right, left) and takes the first that stays on
+ * the map and does not overlap a label placed before it; if none is free it
+ * is hidden. Panels
  * over the map are taken first, then region labels (centred under their
  * ring, nudged aside when two rings are close), then node labels in the order
  * they are requested, so the focused and hovered nodes always win.
@@ -57,6 +58,8 @@ export class LabelLayer {
   private regions: (PooledLabel & { position: Vector3 })[] = [];
   private readonly sizes = new Map<string, { width: number; height: number }>();
   private readonly projected = new Vector3();
+  private width = 0;
+  private height = 0;
   private readonly toCamera = new Vector3();
 
   constructor() {
@@ -97,6 +100,8 @@ export class LabelLayer {
     requests: readonly LabelRequest[],
     keepClear: readonly Box[] = [],
   ): void {
+    this.width = width;
+    this.height = height;
     const taken: Box[] = [];
     // Pixels per world unit at distance 1, for the planet's size on screen.
     const focal = height / (2 * Math.tan((camera.fov * Math.PI) / 360));
@@ -194,7 +199,10 @@ export class LabelLayer {
       [-dx, 0],
     ] as const) {
       const box = centred(x + ox, y + oy, size);
-      if (!taken.some((other) => overlaps(box, other))) return box;
+      // A spot that runs off the map would cut the name; try the next one.
+      const inside =
+        box.left >= 0 && box.top >= 0 && box.right <= this.width && box.bottom <= this.height;
+      if (inside && !taken.some((other) => overlaps(box, other))) return box;
     }
     return null;
   }

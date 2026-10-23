@@ -50,8 +50,10 @@ test('the graphics switch turns glow off and is remembered', async ({ page }) =>
   await toggle.click();
   await expect(toggle).toHaveAttribute('aria-pressed', 'false');
   await page.reload();
+  // Full quality bakes the large sky in software here, which holds up the first paint for a while.
   await expect(page.getByRole('button', { name: /Lite graphics/ })).toHaveAttribute(
     'aria-pressed',
     'false',
+    { timeout: 30_000 },
   );
 });
