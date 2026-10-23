@@ -44,6 +44,8 @@ const BACKGROUND = new Color('#020617');
 const DEPENDANT_EDGE = new Color('#fbbf24');
 const DEPENDENCY_EDGE = new Color('#38bdf8');
 const GLIDE_MS = 900;
+/** Time between impact waves: long enough to follow, short enough not to wait for. */
+const WAVE_MS = 450;
 /** Pointer travel (px) below which a press counts as a click, not a drag. */
 const CLICK_TOLERANCE = 5;
 const MOON_RADIUS = 0.22;
@@ -110,6 +112,14 @@ export class ThreeSystemRenderer implements SystemRenderer {
   private extent = 30;
 
   private highlighted: ReadonlySet<string> = new Set();
+  /** Graph distance per lit node while an impact is shown, else null. */
+  private waves: ReadonlyMap<string, number> | null = null;
+  private lastWave = 0;
+  /** The farthest wave on screen; Infinity when everything is shown. */
+  private shownWave = Infinity;
+  private revealStart = 0;
+  /** Per wave, the number of edge segments with that wave or a nearer one. */
+  private edgeWaveEnds: number[] = [];
   private focusedId: string | null = null;
   private hoveredId: string | null = null;
   private reducedMotion = false;
@@ -207,6 +217,8 @@ export class ThreeSystemRenderer implements SystemRenderer {
     }
 
     this.highlighted = new Set();
+    this.waves = null;
+    this.shownWave = Infinity;
     this.focusedId = null;
     this.applyAppearance();
     this.moveCamera(new Vector3(), this.overviewPosition(), true);
@@ -245,17 +257,30 @@ export class ThreeSystemRenderer implements SystemRenderer {
     this.moveCamera(target, position, this.reducedMotion);
   }
 
-  highlightNodes(nodeIds: ReadonlySet<string>): void {
+  highlightNodes(
+    nodeIds: ReadonlySet<string>,
+    waves: ReadonlyMap<string, number> | null = null,
+  ): void {
     this.highlighted = nodeIds;
+    this.waves = waves;
+    this.lastWave = waves ? Math.max(0, ...waves.values()) : 0;
+    // Wave 0 is the focused node; the frame loop reveals the rest.
+    this.shownWave = waves && !this.reducedMotion && this.lastWave > 0 ? 0 : Infinity;
+    this.revealStart = performance.now();
     this.applyAppearance();
   }
 
-  showEdges(edgeIds: ReadonlySet<string>): void {
+  showEdges(edgeIds: ReadonlySet<string>, waves: ReadonlyMap<string, number> | null = null): void {
     if (this.edgeLines) {
       this.disposeObject(this.edgeLines);
       this.edgeLines = undefined;
     }
-    const edges = (this.graph?.edges ?? []).filter((edge) => edgeIds.has(edge.id));
+    const waveOf = (id: string) => waves?.get(id) ?? 0;
+    const edges = (this.graph?.edges ?? [])
+      .filter((edge) => edgeIds.has(edge.id))
+      // Nearest wave first, so a draw range can reveal them in order.
+      .sort((a, b) => waveOf(a.sourceId) - waveOf(b.sourceId));
+    this.edgeWaveEnds = [];
     if (edges.length === 0) return;
 
     const points: number[] = [];
@@ -265,10 +290,16 @@ export class ThreeSystemRenderer implements SystemRenderer {
       const target = this.slots.get(edge.targetId);
       if (!source || !target) continue;
       // Edges run from dim (dependant) to bright (dependency) to show direction.
-      const tint = edge.targetId === this.focusedId ? DEPENDANT_EDGE : DEPENDENCY_EDGE;
+      // In an impact tree, every edge leads towards the focused node.
+      const towardsFocus = waves !== null || edge.targetId === this.focusedId;
+      const tint = towardsFocus ? DEPENDANT_EDGE : DEPENDENCY_EDGE;
       const dim = tint.clone().lerp(BACKGROUND, 0.75);
       points.push(...source.position.toArray(), ...target.position.toArray());
       colors.push(...dim.toArray(), ...tint.toArray());
+      const wave = waveOf(edge.sourceId);
+      while (this.edgeWaveEnds.length <= wave)
+        this.edgeWaveEnds.push(this.edgeWaveEnds.at(-1) ?? 0);
+      this.edgeWaveEnds[wave]!++;
     }
     const geometry = new BufferGeometry();
     geometry.setAttribute('position', new Float32BufferAttribute(points, 3));
@@ -278,10 +309,16 @@ export class ThreeSystemRenderer implements SystemRenderer {
       new LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.9 }),
     );
     this.graphGroup.add(this.edgeLines);
+    this.updateEdgeRange();
   }
 
   setReducedMotion(enabled: boolean): void {
     this.reducedMotion = enabled;
+    if (enabled && this.shownWave !== Infinity) {
+      this.shownWave = Infinity;
+      this.applyAppearance();
+      this.updateEdgeRange();
+    }
     this.controls.enableDamping = !enabled;
   }
 
@@ -322,6 +359,14 @@ export class ThreeSystemRenderer implements SystemRenderer {
   }
 
   private readonly frame = (time: number): void => {
+    if (this.shownWave !== Infinity) {
+      const wave = Math.floor((time - this.revealStart) / WAVE_MS);
+      if (wave > this.shownWave) {
+        this.shownWave = wave > this.lastWave ? Infinity : wave;
+        this.applyAppearance();
+        this.updateEdgeRange();
+      }
+    }
     if (this.glide) {
       const t = Math.min(1, (time - this.glide.start) / GLIDE_MS);
       const eased = t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
@@ -436,7 +481,8 @@ export class ThreeSystemRenderer implements SystemRenderer {
     const anyHighlight = this.highlighted.size > 0;
 
     for (const [id, slot] of this.slots) {
-      const lit = !anyHighlight || this.highlighted.has(id);
+      const lit =
+        !anyHighlight || (this.highlighted.has(id) && (this.waves?.get(id) ?? 0) <= this.shownWave);
       // Moons stay hidden until their planet is in focus.
       const visible = slot.node.ownerId === undefined || (anyHighlight && lit);
       scale.setScalar(visible ? slot.radius : 0);
@@ -457,6 +503,17 @@ export class ThreeSystemRenderer implements SystemRenderer {
       if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
       mesh.computeBoundingSphere();
     }
+  }
+
+  /** Shows the edges of the waves revealed so far. */
+  private updateEdgeRange(): void {
+    if (!this.edgeLines) return;
+    const ends = this.edgeWaveEnds;
+    const segments =
+      this.shownWave === Infinity || ends.length === 0
+        ? Infinity
+        : (ends[Math.min(this.shownWave, ends.length - 1)] ?? 0);
+    this.edgeLines.geometry.setDrawRange(0, segments === Infinity ? Infinity : segments * 2);
   }
 
   private updateHalo(): void {

@@ -26,6 +26,11 @@ export class ExplorerState {
     this.route.queryParamMap.pipe(map((params) => params.get('node'))),
     { requireSync: true },
   );
+  /** `?impact=1`: show every transitive dependant of the selection, not only direct neighbours. */
+  readonly showImpact = toSignal(
+    this.route.queryParamMap.pipe(map((params) => params.get('impact') === '1')),
+    { requireSync: true },
+  );
 
   /** The selected node's ID, or `null` for the overview. Unknown IDs count as no selection. */
   readonly selectedId = computed(() => {
@@ -35,8 +40,9 @@ export class ExplorerState {
   readonly focus = computed(() => {
     const id = this.selectedId();
     const { result, index } = this.sample();
-    return id ? describeFocus(result, index, id) : null;
+    return id ? describeFocus(result, index, id, this.showImpact()) : null;
   });
+  readonly findings = computed(() => this.sample().result.findings);
   /** The selected node's region and its enclosing regions, outermost first. */
   readonly regionTrail = computed(() => {
     const regionId = this.focus()?.node.regionId;
@@ -52,10 +58,19 @@ export class ExplorerState {
   /** Bumped by "Reset view", so the map returns to the overview even with nothing selected. */
   readonly resets = signal(0);
 
+  /** A new selection starts with its direct neighbours; the full impact is one more click. */
   select(nodeId: string | null): void {
     if (nodeId === this.selectedId()) return;
     void this.router.navigate([], {
-      queryParams: { node: nodeId },
+      queryParams: { node: nodeId, impact: null },
+      queryParamsHandling: 'merge',
+    });
+  }
+
+  setShowImpact(show: boolean): void {
+    if (show === this.showImpact()) return;
+    void this.router.navigate([], {
+      queryParams: { impact: show ? '1' : null },
       queryParamsHandling: 'merge',
     });
   }

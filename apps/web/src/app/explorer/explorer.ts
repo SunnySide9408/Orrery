@@ -74,6 +74,14 @@ function inspectorInset(): number {
         }
       </ul>
       <p class="mt-1.5 text-slate-300">Planet size: lines of code. Dashed ring: lazy route.</p>
+      @if (state.focus(); as f) {
+        <p class="mt-1 text-slate-300">
+          <span class="text-amber-300">Amber</span> lines: files that depend on it.
+          @if (!f.showImpact) {
+            <span class="text-sky-300">Blue</span> lines: what it depends on.
+          }
+        </p>
+      }
     </section>
   `,
 })
@@ -147,8 +155,8 @@ export class Explorer {
     if (!renderer) return;
     renderer.setRightInset(focus ? inspectorInset() : 0);
     // Highlight first: the camera frames the focused node with its highlighted neighbours.
-    renderer.highlightNodes(focus?.litNodeIds ?? new Set());
+    renderer.highlightNodes(focus?.litNodeIds ?? new Set(), focus?.waves);
     renderer.focusNode(focus?.node.id ?? null);
-    renderer.showEdges(focus?.edgeIds ?? new Set());
+    renderer.showEdges(focus?.edgeIds ?? new Set(), focus?.waves);
   }
 }

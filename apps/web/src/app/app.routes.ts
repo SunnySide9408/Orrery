@@ -15,6 +15,11 @@ const VIEWS: Routes = [
     title: 'Orrery · List',
     loadComponent: () => import('./list/list-view').then((m) => m.ListView),
   },
+  {
+    path: 'findings',
+    title: 'Orrery · Findings',
+    loadComponent: () => import('./findings/findings-view').then((m) => m.FindingsView),
+  },
 ];
 
 export const routes: Routes = [

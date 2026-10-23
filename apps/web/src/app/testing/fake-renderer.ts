@@ -9,6 +9,7 @@ export class FakeRenderer implements SystemRenderer {
   focused: (string | null)[] = [];
   highlighted: ReadonlySet<string> = new Set();
   edges: ReadonlySet<string> = new Set();
+  waves: ReadonlyMap<string, number> | null = null;
 
   constructor() {
     FakeRenderer.instances.push(this);
@@ -23,8 +24,9 @@ export class FakeRenderer implements SystemRenderer {
   focusNode(id: string | null) {
     this.focused.push(id);
   }
-  highlightNodes(ids: ReadonlySet<string>) {
+  highlightNodes(ids: ReadonlySet<string>, waves: ReadonlyMap<string, number> | null = null) {
     this.highlighted = ids;
+    this.waves = waves;
   }
   showEdges(ids: ReadonlySet<string>) {
     this.edges = ids;

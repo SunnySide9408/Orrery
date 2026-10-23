@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { Explorer } from '../explorer/explorer';
+import { FindingsView } from '../findings/findings-view';
 import { ListView } from '../list/list-view';
 import { SYSTEM_RENDERER } from '../renderer/system-renderer';
 import { FakeRenderer } from '../testing/fake-renderer';
@@ -35,6 +36,7 @@ describe('Shell', () => {
             children: [
               { path: '', component: Explorer },
               { path: 'list', component: ListView },
+              { path: 'findings', component: FindingsView },
             ],
           },
         ]),
@@ -126,5 +128,60 @@ describe('Shell', () => {
     button.click();
     await harness.fixture.whenStable();
     expect(inspector()).not.toBeNull();
+  });
+
+  it('shows the full impact in waves, with paths, and says it honestly', async () => {
+    const harness = await open(`/shop?node=${encodeURIComponent(AUTH)}`);
+    const renderer = FakeRenderer.instances[0]!;
+    expect(renderer.waves).toBeNull();
+    expect(text(harness)).toMatch(
+      /potentially affected by a change, according to static relationships/,
+    );
+
+    const toggle = [...document.querySelectorAll('button')].find(
+      (b) => b.textContent?.trim() === 'Show full impact',
+    )!;
+    toggle.click();
+    await harness.fixture.whenStable();
+
+    expect(TestBed.inject(Router).url).toContain('impact=1');
+    expect(toggle.getAttribute('aria-pressed')).toBe('true');
+    expect(renderer.waves?.get(AUTH)).toBe(0);
+    expect(renderer.waves?.get('src/app/features/account/login-page.ts')).toBe(1);
+    expect(Math.max(...renderer.waves!.values())).toBeGreaterThan(1);
+    expect(text(harness)).toContain('Step 2');
+    expect(text(harness)).toMatch(/via /);
+  });
+
+  it('starts a new selection with direct links only', async () => {
+    const harness = await open(`/shop?node=${encodeURIComponent(AUTH)}&impact=1`);
+    FakeRenderer.instances[0]!.events!.nodePicked('src/app/features/account/login-page.ts');
+    await harness.fixture.whenStable();
+    expect(TestBed.inject(Router).url).not.toContain('impact');
+  });
+
+  it('marks injected dependencies and shows where a service is provided', async () => {
+    const harness = await open(`/shop?node=${encodeURIComponent(AUTH)}`);
+    expect(inspector()?.textContent).toMatch(/Provided\s*root/);
+    expect(text(harness)).toMatch(/LoginPage\s*injects/);
+  });
+
+  it('lists findings with rule, threshold, limits and file-and-line evidence', async () => {
+    const harness = await open('/shop/findings');
+    const cards = document.querySelectorAll('[data-testid="finding"]');
+    expect(cards).toHaveLength(sample.result.findings.length);
+    const card = cards[0]!.textContent!.replace(/\s+/g, ' ');
+    // 12 direct dependants in the inspector, minus 2 specs, which findings leave out.
+    expect(card).toContain('High fan-in: used directly by 10 files');
+    expect(card).toContain('Rule');
+    expect(card).toContain('Threshold 10 files');
+    expect(card).toContain('Limits');
+    expect(card).toMatch(/import · line \d+/);
+
+    const step = cards[0]!.querySelector('li button') as HTMLButtonElement;
+    step.click();
+    await harness.fixture.whenStable();
+    expect(inspector()).not.toBeNull();
+    expect(text(harness)).toContain('Findings (1)');
   });
 });
