@@ -266,8 +266,8 @@ export function createStar(position: Vector3, size: number, color: Color, seed: 
     ),
   );
   for (const [scale, opacity] of [
-    [size * 4, 0.6],
-    [size * 11, 0.12],
+    [size * 5, 0.75],
+    [size * 14, 0.18],
   ] as const) {
     const sprite = new Sprite(
       new SpriteMaterial({

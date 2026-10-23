@@ -15,9 +15,13 @@ Planets are drawn as real-looking worlds, generated in a shader, instead of flat
 
 **Stars.** Each region with planets gets a star at its centre. Its colour comes from the region ID; its size grows a little with the number of planets. The star is the light source for its planets, so they have a day side and a night side. A faint fill from the camera keeps the night side readable.
 
-**Sky.** Nebula clouds, a dusty band, three layers of stars and three spiral galaxies are rendered once per project into a 1024² cube map and used as the scene background. Its seed comes from the region IDs, so each project has its own sky.
+**Sky.** Nebula clouds, a dusty band, three layers of stars and three spiral galaxies are rendered once per project into a 1024² cube map and used as the scene background. The big galaxy sits behind the map in the default overview, as a backdrop. Its seed comes from the region IDs, so each project has its own sky.
 
-**Readability.** The sky is kept dim (background intensity 0.9 under ACES tone mapping). Edges, region rings and the focus halo skip tone mapping so their colours match the legend exactly. Faded planets drop to 22 % brightness; edges are still hidden until focus.
+**Glow.** A bloom pass (Three.js `UnrealBloomPass`) runs after the scene, with a threshold of 1.0 in linear light: only stars, galaxy cores and glowing cracks bloom. Planets' day sides, edges and region rings stay below it, and labels are HTML, so text never blurs.
+
+**Room for bigger planets.** Planet radius is now 0.45 + 0.11·√lines, capped at 1.9. The layout's orbit gap grows from 3 to 4 and moons sit 2.3 from their planet (layout version `orbit-3`), so the larger planets still have space.
+
+**Readability.** The sky is kept dim (background intensity 0.9). Tone mapping is Khronos PBR Neutral, which keeps hues close to their input, so edge and legend colours still match. Faded planets drop to 22 % brightness; edges are still hidden until focus.
 
 ## Why
 
@@ -30,5 +34,5 @@ Planets are drawn as real-looking worlds, generated in a shader, instead of flat
 ## Limits and next steps
 
 - The fragment shader is the heaviest part of the frame. Phase 4 measures it at 500 nodes and, if needed, lowers detail for planets that are only a few pixels wide.
-- Bloom and other post-processing are not used. Phase 4 can add them if the frame budget allows.
+- Bloom costs a few full-screen passes. Phase 4's WebGL step-down should switch it off on weak GPUs.
 - If baking the sky fails (a very weak GPU), the plain dark background is used.

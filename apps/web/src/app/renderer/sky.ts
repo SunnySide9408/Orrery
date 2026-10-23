@@ -30,18 +30,24 @@ interface GalaxySpec {
   core: readonly [number, number, number];
   arm: readonly [number, number, number];
   tilt: number;
+  /** Star-cluster cells across the disc; smaller galaxies need fewer to stay crisp. */
+  detail: number;
 }
 
-/** Fixed positions so the big galaxy sits behind the default overview. */
+/**
+ * Fixed placements. The big galaxy sits right behind the map in the default
+ * overview (the camera looks along -0.6 y, -0.8 z), like a backdrop.
+ */
 const GALAXIES: readonly GalaxySpec[] = [
   {
-    direction: [-0.3, -0.3, -0.9],
-    size: 150,
+    direction: [0, -0.45, -0.89],
+    size: 300,
     arms: 2,
-    twist: 3.2,
-    core: [1, 0.82, 0.62],
-    arm: [0.45, 0.5, 1],
-    tilt: 1,
+    twist: 3,
+    core: [1, 0.85, 0.7],
+    arm: [0.42, 0.52, 1],
+    tilt: 0.95,
+    detail: 55,
   },
   {
     direction: [0.75, -0.15, 0.64],
@@ -51,15 +57,17 @@ const GALAXIES: readonly GalaxySpec[] = [
     core: [1, 0.9, 0.8],
     arm: [0.7, 0.45, 0.9],
     tilt: 0.5,
+    detail: 12,
   },
   {
-    direction: [0.2, 0.9, 0.35],
-    size: 22,
+    direction: [-0.6, 0.55, -0.55],
+    size: 26,
     arms: 2,
     twist: 4,
     core: [1, 0.85, 0.7],
     arm: [0.5, 0.6, 1],
     tilt: 1.2,
+    detail: 10,
   },
 ];
 
@@ -98,6 +106,7 @@ export function bakeSky(renderer: WebGLRenderer, seedText: string): BakedSky {
           uCore: { value: new Vector3(...galaxy.core) },
           uArm: { value: new Vector3(...galaxy.arm) },
           uSeed: { value: random() * 10 },
+          uDetail: { value: galaxy.detail },
         },
         vertexShader: GALAXY_VERTEX,
         fragmentShader: GALAXY_FRAGMENT,

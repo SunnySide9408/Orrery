@@ -1,6 +1,5 @@
 import type { DependencyGraph, GraphNode, Layout } from '@orrery/contracts';
 import {
-  ACESFilmicToneMapping,
   BufferGeometry,
   Color,
   DoubleSide,
@@ -10,6 +9,7 @@ import {
   LineDashedMaterial,
   LineLoop,
   LineSegments,
+  NeutralToneMapping,
   Material,
   Mesh,
   MeshBasicMaterial,
@@ -24,6 +24,10 @@ import {
   WebGLRenderer,
 } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { CSS2DObject, CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
 import { createMarkerElement } from './kind-style';
 import { createStar, PlanetField, type PlanetBody } from './planet-field';
@@ -40,6 +44,8 @@ const WAVE_MS = 450;
 /** Pointer travel (px) below which a press counts as a click, not a drag. */
 const CLICK_TOLERANCE = 5;
 const MOON_RADIUS = 0.22;
+/** Keeps the biggest files inside the gap between orbits (ORBIT_GAP in the layout). */
+const MAX_PLANET_RADIUS = 1.9;
 /** Picking uses a slightly larger sphere, so small moons stay easy to click. */
 const PICK_MIN_RADIUS = 0.35;
 
@@ -83,6 +89,9 @@ export class ThreeSystemRenderer implements SystemRenderer {
   private container!: HTMLElement;
   private events!: SystemRendererEvents;
   private renderer!: WebGLRenderer;
+  /** Scene, then bloom on bright pixels (stars, galaxy cores, lava), then tone mapping. */
+  private composer!: EffectComposer;
+  private bloom!: UnrealBloomPass;
   private labels!: CSS2DRenderer;
   private camera!: PerspectiveCamera;
   private controls!: OrbitControls;
@@ -131,7 +140,8 @@ export class ThreeSystemRenderer implements SystemRenderer {
     this.renderer = new WebGLRenderer({ antialias: true });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.setClearColor(BACKGROUND);
-    this.renderer.toneMapping = ACESFilmicToneMapping;
+    // Neutral keeps hues close to the legend colours, unlike ACES.
+    this.renderer.toneMapping = NeutralToneMapping;
     this.renderer.domElement.classList.add('block', 'size-full');
     container.appendChild(this.renderer.domElement);
 
@@ -143,6 +153,13 @@ export class ThreeSystemRenderer implements SystemRenderer {
 
     this.camera = new PerspectiveCamera(50, 1, 0.1, 2000);
     this.camera.position.set(0, 50, 60);
+    this.composer = new EffectComposer(this.renderer);
+    this.composer.addPass(new RenderPass(this.scene, this.camera));
+    // A high threshold: only stars, galaxy cores and glowing cracks bloom, never labels or planets' day side.
+    this.bloom = new UnrealBloomPass(new Vector2(1, 1), 0.85, 0.55, 1);
+    this.composer.addPass(this.bloom);
+    this.composer.addPass(new OutputPass());
+
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = true;
     this.controls.maxDistance = 400;
@@ -218,7 +235,7 @@ export class ThreeSystemRenderer implements SystemRenderer {
       const position = new Vector3(p?.x ?? 0, p?.y ?? 0, p?.z ?? 0);
       const radius =
         node.ownerId === undefined
-          ? 0.35 + 0.08 * Math.sqrt(node.metrics.linesOfCode)
+          ? Math.min(0.45 + 0.11 * Math.sqrt(node.metrics.linesOfCode), MAX_PLANET_RADIUS)
           : MOON_RADIUS;
       const star = stars.get(node.regionId) ?? {
         ...fallbackLight,
@@ -364,6 +381,8 @@ export class ThreeSystemRenderer implements SystemRenderer {
     const { clientWidth: width, clientHeight: height } = this.container;
     if (width === 0 || height === 0) return;
     this.renderer.setSize(width, height, false);
+    this.composer.setPixelRatio(this.renderer.getPixelRatio());
+    this.composer.setSize(width, height);
     this.labels.setSize(width, height);
     // Render a window of a wider virtual view, so its centre sits in the middle
     // of the part of the screen the inspector does not cover.
@@ -386,6 +405,8 @@ export class ThreeSystemRenderer implements SystemRenderer {
     this.sky?.dispose();
     this.scene.traverse((object) => this.disposeResources(object));
     this.scene.clear();
+    this.bloom.dispose();
+    this.composer.dispose();
     this.renderer.dispose();
     canvas.remove();
     this.labels.domElement.remove();
@@ -416,7 +437,7 @@ export class ThreeSystemRenderer implements SystemRenderer {
     }
     this.controls.update();
     this.halo?.quaternion.copy(this.camera.quaternion);
-    this.renderer.render(this.scene, this.camera);
+    this.composer.render();
     this.labels.render(this.scene, this.camera);
     this.declutterLabels();
   };

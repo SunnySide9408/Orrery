@@ -262,7 +262,7 @@ void main(){
   float mu=max(dot(N,V),0.);
   float gran=fbm(N*7.+uSeed+vec3(uTime*.05));
   float limb=.45+.55*pow(mu,.5);
-  vec3 c=uColor*(1.25+gran*.5)*limb;
+  vec3 c=uColor*(2.6+gran*.9)*limb;
   gl_FragColor=vec4(c,1.);
   #include <tonemapping_fragment>
   #include <colorspace_fragment>
@@ -297,7 +297,7 @@ void main(){
   vec3 s=d*1.6+uSeed;
   float n1=fbm(s*1.3); float n2=fbm(s*2.7+n1*1.5);
   float neb=smoothstep(-.15,.75,n2)*(.35+band*.9);
-  vec3 c1=vec3(.08,.05,.22), c2=vec3(.32,.09,.42), c3=vec3(.04,.22,.36), c4=vec3(.55,.18,.30);
+  vec3 c1=vec3(.03,.04,.16), c2=vec3(.2,.1,.46), c3=vec3(.05,.16,.44), c4=vec3(.42,.16,.48);
   vec3 neb_c=mix(c1,c2,smoothstep(-.3,.6,n1));
   neb_c=mix(neb_c,c3,smoothstep(.2,.7,fbm3(s*1.9+7.)));
   neb_c=mix(neb_c,c4,smoothstep(.45,.8,n2)*.6);
@@ -319,19 +319,34 @@ void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,
 /** A spiral galaxy on a quad: logarithmic arms, dust lanes and a bright core. */
 export const GALAXY_FRAGMENT = /* glsl */ `
 ${NOISE}
-uniform float uArms; uniform float uTwist; uniform vec3 uCore; uniform vec3 uArm; uniform float uSeed;
+uniform float uArms; uniform float uTwist; uniform vec3 uCore; uniform vec3 uArm; uniform float uSeed; uniform float uDetail;
 varying vec2 vUv;
+/** A slow wobble so the arms are not perfect spirals. */
+float n0(vec2 p, float s){ return snoise(vec3(p*1.6,s))*.6; }
 void main(){
   vec2 p=(vUv-.5)*2.;
   float r=length(p); if(r>1.) discard;
   float th=atan(p.y,p.x);
-  float spiral=cos(uArms*(th-log(r+.02)*uTwist));
-  float arms=pow(.5+.5*spiral,3.);
-  float clump=.6+.8*max(snoise(vec3(p*9.,uSeed)),0.);
-  float disk=exp(-r*3.2);
-  float core=exp(-r*r*55.);
-  float dust=smoothstep(.2,.9,.5+.5*cos(uArms*(th-log(r+.02)*uTwist)+.9))*smoothstep(.05,.25,r)*.6;
-  vec3 c=uArm*arms*disk*clump*(1.-dust)*2.+uCore*(core*3.+disk*.5);
-  c*=smoothstep(1.,.6,r);
+  float arm=th-log(r+.015)*uTwist;
+  float arms=pow(.5+.5*cos(uArms*arm+(n0(p,uSeed))),3.5);
+  float n=fbm(vec3(p*5.,uSeed))*.5+.5;
+  float n2=fbm(vec3(p*16.,uSeed+3.))*.5+.5;
+  float disk=exp(-r*2.2)*smoothstep(.03,.25,r);
+  // Dust lanes trail just inside each arm.
+  float dust=smoothstep(.55,.95,.5+.5*cos(uArms*arm+1.1))*smoothstep(.05,.3,r)*(.4+.6*n2);
+  vec3 armC=mix(uArm,vec3(.72,.55,1.),n2*.5);
+  vec3 c=armC*arms*(.3+.9*n)*disk*.95;
+  // Pink star-forming knots along the arms.
+  c+=vec3(1.,.5,.78)*pow(n2,6.)*arms*disk*1.4;
+  c+=armC*exp(-r*2.5)*.06;
+  c*=1.-dust*.8;
+  // Young star clusters as specks, jittered so they never line up.
+  vec2 g=p*uDetail; vec2 cell=floor(g);
+  vec3 h=hash33(vec3(cell,uSeed));
+  float speck=smoothstep(.22,.0,length(fract(g)-.5-(h.xy-.5)*.6))*step(.7,h.z);
+  c+=vec3(.8,.88,1.)*speck*arms*smoothstep(1.,.2,r)*.9;
+  // Bulge: a small hot core (it blooms) inside a soft glow.
+  c+=uCore*(exp(-r*r*140.)*3.+exp(-r*r*16.)*.3);
+  c*=smoothstep(1.,.65,r);
   gl_FragColor=vec4(c,1.);
 }`;
