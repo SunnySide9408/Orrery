@@ -53,6 +53,9 @@ import { Search } from './search';
             >{{ sample.info.name }}</a
           >
           <span class="text-slate-400"> · {{ sample.info.license }} · {{ stats() }}</span>
+        } @else if (sample.info.id === 'perf') {
+          <span class="text-slate-100">{{ sample.info.name }}</span>
+          <span class="text-slate-400"> · generated test map · {{ stats() }}</span>
         } @else {
           <span class="text-slate-100">{{ sample.info.name }}</span>
           <span class="text-slate-400">

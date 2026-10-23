@@ -316,37 +316,54 @@ export const GALAXY_VERTEX = /* glsl */ `
 varying vec2 vUv;
 void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.); }`;
 
-/** A spiral galaxy on a quad: logarithmic arms, dust lanes and a bright core. */
+/**
+ * A spiral galaxy on a quad: logarithmic arms with spurs, dust lanes broken
+ * into filaments, star-forming knots, clusters at two scales and a hot core.
+ * `uFine` (0 to 1) adds grain that only resolves on the big backdrop galaxy,
+ * which gets its own high-resolution texture; small ones would only alias.
+ */
 export const GALAXY_FRAGMENT = /* glsl */ `
 ${NOISE}
-uniform float uArms; uniform float uTwist; uniform vec3 uCore; uniform vec3 uArm; uniform float uSeed; uniform float uDetail;
+uniform float uArms; uniform float uTwist; uniform vec3 uCore; uniform vec3 uArm; uniform float uSeed; uniform float uDetail; uniform float uFine;
 varying vec2 vUv;
 /** A slow wobble so the arms are not perfect spirals. */
 float n0(vec2 p, float s){ return snoise(vec3(p*1.6,s))*.6; }
+/** Point-like stars jittered in a grid, so they never line up. */
+vec3 specks(vec2 p, float detail, float seed){
+  vec2 g=p*detail; vec2 cell=floor(g);
+  vec3 h=hash33(vec3(cell,seed));
+  float s=smoothstep(.22,.0,length(fract(g)-.5-(h.xy-.5)*.6))*step(.7,h.z);
+  return mix(vec3(.8,.88,1.),vec3(1.,.86,.72),fract(h.z*7.))*s*(.5+h.y);
+}
 void main(){
   vec2 p=(vUv-.5)*2.;
   float r=length(p); if(r>1.) discard;
   float th=atan(p.y,p.x);
-  float arm=th-log(r+.015)*uTwist;
-  float arms=pow(.5+.5*cos(uArms*arm+(n0(p,uSeed))),3.5);
+  float wave=uArms*(th-log(r+.015)*uTwist)+n0(p,uSeed);
+  float arms=pow(.5+.5*cos(wave),3.5);
+  // Feathery spurs between the main arms break up the clean spiral.
+  float spur=pow(.5+.5*cos(wave*2.+fbm3(vec3(p*3.,uSeed+5.))*2.),8.)*.35*uFine;
   float n=fbm(vec3(p*5.,uSeed))*.5+.5;
   float n2=fbm(vec3(p*16.,uSeed+3.))*.5+.5;
+  float n3=mix(.5,fbm3(vec3(p*42.,uSeed+7.))*.5+.5,uFine);
   float disk=exp(-r*2.2)*smoothstep(.03,.25,r);
-  // Dust lanes trail just inside each arm.
-  float dust=smoothstep(.55,.95,.5+.5*cos(uArms*arm+1.1))*smoothstep(.05,.3,r)*(.4+.6*n2);
+  // Dust lanes trail just inside each arm; ridged noise turns them into filaments.
+  float lanes=smoothstep(.55,.95,.5+.5*cos(wave+1.1))*(.4+.6*n2);
+  float ridge=pow(1.-abs(snoise(vec3(p*9.,uSeed+11.))),6.)*.5*arms*uFine;
+  float dust=clamp(lanes+ridge,0.,1.)*smoothstep(.05,.3,r);
   vec3 armC=mix(uArm,vec3(.72,.55,1.),n2*.5);
-  vec3 c=armC*arms*(.3+.9*n)*disk*.95;
+  float a=arms+spur;
+  vec3 c=armC*a*(.3+.9*n)*(.7+.6*n3)*disk*.95;
   // Pink star-forming knots along the arms.
   c+=vec3(1.,.5,.78)*pow(n2,6.)*arms*disk*1.4;
   c+=armC*exp(-r*2.5)*.06;
   c*=1.-dust*.8;
-  // Young star clusters as specks, jittered so they never line up.
-  vec2 g=p*uDetail; vec2 cell=floor(g);
-  vec3 h=hash33(vec3(cell,uSeed));
-  float speck=smoothstep(.22,.0,length(fract(g)-.5-(h.xy-.5)*.6))*step(.7,h.z);
-  c+=vec3(.8,.88,1.)*speck*arms*smoothstep(1.,.2,r)*.9;
-  // Bulge: a small hot core (it blooms) inside a soft glow.
+  // Young clusters along the arms, and a finer field of single stars.
+  c+=specks(p,uDetail,uSeed)*arms*smoothstep(1.,.2,r)*.9;
+  c+=specks(p,uDetail*2.6,uSeed+1.)*(a+.25)*smoothstep(1.,.1,r)*.45*uFine;
+  // Bulge: a small hot core (it blooms) inside a soft glow of old, yellower stars.
   c+=uCore*(exp(-r*r*140.)*3.+exp(-r*r*16.)*.3);
+  c+=uCore*exp(-r*r*30.)*.25*(n3-.3)*uFine;
   c*=smoothstep(1.,.65,r);
-  gl_FragColor=vec4(c,1.);
+  gl_FragColor=vec4(max(c,0.),1.);
 }`;

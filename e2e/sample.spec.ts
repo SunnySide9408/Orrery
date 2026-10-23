@@ -103,7 +103,11 @@ test('works offline once loaded', async ({ page, context }) => {
   await context.setOffline(true);
   // Open the link again, as a visitor would. (A reload may bypass the worker.)
   await page.goto('./realworld');
-  await expect(page.getByText(`${sample.graph.nodes.length} files ·`)).toBeVisible();
+  // Software WebGL compiles the planet and sky shaders on the main thread, which can hold up
+  // the first paint for several seconds when the other test worker is rendering too.
+  await expect(page.getByText(`${sample.graph.nodes.length} files ·`)).toBeVisible({
+    timeout: 20_000,
+  });
   await page.getByRole('link', { name: 'List' }).click();
   await expect(page.getByRole('button', { name: 'UserService' })).toBeVisible();
 });

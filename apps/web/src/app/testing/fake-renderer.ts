@@ -34,6 +34,12 @@ export class FakeRenderer implements SystemRenderer {
   setReducedMotion() {
     /* not needed */
   }
+  setQuality() {
+    /* not needed */
+  }
+  setFrameRateVisible() {
+    /* not needed */
+  }
   setRightInset() {
     /* not needed */
   }
