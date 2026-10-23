@@ -9,7 +9,7 @@ import type {
 } from '@orrery/contracts';
 
 /** Bump when the algorithm changes, so cached positions are not mixed with new ones. */
-export const ORBIT_LAYOUT_VERSION = 'orbit-1';
+export const ORBIT_LAYOUT_VERSION = 'orbit-2';
 
 /** Distance between planet orbits inside a region. */
 const ORBIT_GAP = 3;
@@ -51,6 +51,30 @@ export function orbitLayout(graph: DependencyGraph): Layout {
     graph.regions.map((region) => [region.id, localSystem(nodesByRegion.get(region.id) ?? [])]),
   );
 
+  const childrenByRegion = new Map(
+    graph.regions.map((region) => [region.id, sortById(childrenOf.get(region.id) ?? [])]),
+  );
+
+  /**
+   * How far a region and everything placed around it reach from its centre.
+   * Rings are sized by this, not by the region's own radius, so a child that
+   * has children of its own keeps its whole family clear of its neighbours.
+   */
+  const extents = new Map<string, { ring: number; extent: number }>();
+  const measure = (region: Region): { ring: number; extent: number } => {
+    const known = extents.get(region.id);
+    if (known) return known;
+    const own = local.get(region.id)!.radius;
+    const childExtents = childrenByRegion.get(region.id)!.map((child) => measure(child).extent);
+    const ring = ringRadius(own, childExtents);
+    const result = {
+      ring,
+      extent: childExtents.length === 0 ? own : Math.max(own, ring + Math.max(...childExtents)),
+    };
+    extents.set(region.id, result);
+    return result;
+  };
+
   const regionPositions: RegionPosition[] = [];
   const nodePositions: NodePosition[] = [];
 
@@ -60,9 +84,8 @@ export function orbitLayout(graph: DependencyGraph): Layout {
     for (const position of system.nodes) {
       nodePositions.push({ ...position, x: position.x + x, z: position.z + z });
     }
-    const children = sortById(childrenOf.get(region.id) ?? []);
-    const radii = children.map((child) => local.get(child.id)!.radius);
-    const ring = ringRadius(system.radius, radii);
+    const children = childrenByRegion.get(region.id)!;
+    const { ring } = measure(region);
     children.forEach((child, index) => {
       const angle = (index / children.length) * Math.PI * 2;
       place(child, x + Math.cos(angle) * ring, z + Math.sin(angle) * ring);
@@ -75,7 +98,7 @@ export function orbitLayout(graph: DependencyGraph): Layout {
   );
   const rootRing = ringRadius(
     0,
-    roots.map((root) => local.get(root.id)!.radius),
+    roots.map((root) => measure(root).extent),
   );
   roots.forEach((root, index) => {
     const angle = (index / roots.length) * Math.PI * 2;
