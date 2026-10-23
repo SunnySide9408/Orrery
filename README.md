@@ -31,6 +31,7 @@ packages/contracts         analysis-result types, validation, ID rules
 packages/analyzer-angular  TypeScript compiler API → analysis result (later)
 packages/graph-core        traversal, impact, cycles, metrics (later)
 packages/layout            deterministic positions (later)
+fixtures/shop              hand-written analysis result: 40 nodes, 3 lazy features
 docs/decisions             architecture decision records
 ```
 

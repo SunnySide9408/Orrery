@@ -41,7 +41,7 @@ export default defineConfig([
     extends: [angular.configs.templateRecommended, angular.configs.templateAccessibility],
   },
   {
-    files: ['packages/**/*.ts'],
+    files: ['packages/**/*.ts', 'fixtures/**/*.ts'],
     rules: { 'no-restricted-imports': ['error', frameworkImports] },
   },
 ]);
