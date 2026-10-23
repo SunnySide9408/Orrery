@@ -1,0 +1,14 @@
+{
+  "name": "@orrery/cli",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Analyses Angular projects into analysis-result JSON. Used at build time for the bundled samples.",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@orrery/analyzer-angular": "0.0.0",
+    "@orrery/contracts": "0.0.0"
+  }
+}
