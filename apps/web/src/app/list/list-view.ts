@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import type { GraphNode, Region } from '@orrery/contracts';
+import { KindMarker } from '../renderer/kind-marker';
 import { KIND_STYLES } from '../renderer/kind-style';
 import { ExplorerState } from '../shell/explorer-state';
 
@@ -8,7 +9,6 @@ interface Row {
   /** Path inside the region's folder; the full path is in the region heading and the tooltip. */
   shortPath: string;
   kindLabel: string;
-  color: string;
   dependants: number;
   dependencies: number;
   moons: number;
@@ -28,6 +28,7 @@ interface RegionGroup {
  */
 @Component({
   selector: 'app-list-view',
+  imports: [KindMarker],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block size-full overflow-y-auto' },
   template: `
@@ -86,10 +87,7 @@ interface RegionGroup {
                       </button>
                     </th>
                     <td class="py-1 pr-3 whitespace-nowrap">
-                      <span
-                        class="mr-1 inline-block size-2 rounded-full"
-                        [style.background]="row.color"
-                      ></span>
+                      <app-kind-marker class="mr-1 align-middle" [kind]="row.node.kind" />
                       {{ row.kindLabel }}
                     </td>
                     <td
@@ -174,7 +172,6 @@ export class ListView {
               ? node.path.slice(region.rootPath.length + 1)
               : node.path,
             kindLabel: KIND_STYLES[node.kind].label,
-            color: KIND_STYLES[node.kind].color,
             dependants: index.dependantsOf(node.id).length,
             dependencies: index.dependenciesOf(node.id).length,
             moons: moons.get(node.id) ?? 0,

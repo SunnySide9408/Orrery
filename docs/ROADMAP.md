@@ -30,18 +30,20 @@ Each phase runs in its own thread and lands as one or more pull requests.
 
 - Dark space scene. Background `#020617` (Tailwind slate-950). UI panels in the slate scale; text `#f8fafc` on dark.
 - Every visual encoding means something (structure, status, focus or change). Anything else is decoration and gets cut.
-- Node kinds use colour **and** shape, never colour alone. The current mapping in `apps/web/src/app/renderer/kind-style.ts` is the reference, and the on-screen legend is generated from it:
+- Node kinds use colour **and** shape, never colour alone. Since the planet look pass (docs/decisions/0009), planets are procedural worlds: the kind sets the planet family and the marker, and the file path sets the individual look. `apps/web/src/app/renderer/kind-style.ts` is the reference, and the on-screen legend is generated from it:
 
-  | Kind                           | Colour              | Shape               |
-  | ------------------------------ | ------------------- | ------------------- |
-  | Component                      | `#60a5fa` blue      | icosahedron         |
-  | Service                        | `#fbbf24` amber     | sphere              |
-  | Directive                      | `#a78bfa` violet    | octahedron          |
-  | Pipe                           | `#34d399` green     | torus               |
-  | Guard / interceptor / resolver | red / orange / teal | cone                |
-  | NgModule / routes              | magenta / pink      | box                 |
-  | Spec                           | `#94a3b8` grey      | small sphere (moon) |
+  | Kind                           | Colour              | Planet family                      | Marker        |
+  | ------------------------------ | ------------------- | ---------------------------------- | ------------- |
+  | Component                      | `#60a5fa` blue      | ocean world                        | circle        |
+  | Service                        | `#fbbf24` amber     | gas giant, always ringed           | ringed circle |
+  | Directive                      | `#a78bfa` violet    | storm world                        | diamond       |
+  | Pipe                           | `#34d399` green     | jungle world                       | hexagon       |
+  | Guard / interceptor / resolver | red / orange / teal | lava / molten desert / cracked ice | triangle      |
+  | NgModule / routes              | magenta / pink      | crystal world                      | square        |
+  | Spec                           | `#94a3b8` grey      | cratered moon                      | dot           |
+  | Other                          | `#cbd5e1` light     | rocky world                        | plus          |
 
+- Each region has a star that lights its planets. The sky (nebulae, stars, galaxies) is baked once per project and stays dim behind the map.
 - Edge colours: dependants amber `#fbbf24`, dependencies sky `#38bdf8`, lazy boundary dashed indigo `#818cf8`. Edges always show direction.
 - Planet size encodes one metric, documented in the legend: **fan-in (proposed)**.
 - Region labels are always visible at overview. Planet labels appear on zoom or focus. Labels must not overlap (open item from Phase 0).
@@ -143,9 +145,23 @@ Delivered in the phase-3-insights pull request; see docs/decisions/0008.
 - Every finding links to its evidence; wording follows the honesty rule.
 - Preview check done.
 
+## Planet look pass (before Phase 4)
+
+Delivered in the planet-look pull request; see docs/decisions/0009.
+
+**Goal:** planets that look like real, unique worlds against a real-looking sky, without losing readability or speed.
+
+**Done when**
+
+- Every kind has its own planet family, and files of one kind do not repeat (unit test on 2,000 IDs).
+- Kinds still differ without colour: surface, rings on services, marker shape in labels and legend.
+- Planets, atmospheres and rings are three draw calls in total; the sky is baked once.
+- Reduced motion stops spin and drift.
+- Preview check done.
+
 ## Phase 4 · Cinematic polish
 
-**Goal:** smooth effects that never block controls.
+**Goal:** smooth effects that never block controls. The look itself was settled in the planet look pass, so this phase is about motion and speed.
 
 **Deliverables**
 

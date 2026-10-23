@@ -4,7 +4,7 @@ Your Angular app, as a living solar system. Orrery is a visual architecture expl
 
 Not deployed yet: run it locally (below). A manual GitHub Pages deploy is ready for when it is (see docs/decisions/0006).
 
-Status: Phase 3 (insights: full impact of a change in waves, dependency cycles, high fan-in and fan-out, and dependency-injection edges). Phase 2 brought analysis of your own Angular folder in the browser; Phase 1 the app shell and one real sample, the Angular RealWorld app.
+Status: planet look pass (every file is a unique procedural planet, each region has its own star, under a baked nebula and galaxy sky). Phase 3 brought insights: full impact of a change in waves, dependency cycles, high fan-in and fan-out, and dependency-injection edges. Phase 2 brought analysis of your own Angular folder in the browser; Phase 1 the app shell and one real sample, the Angular RealWorld app.
 
 ![Selecting AuthService lights up its dependants in three lazy features](docs/images/phase-0-authservice.png)
 

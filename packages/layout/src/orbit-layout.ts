@@ -9,14 +9,14 @@ import type {
 } from '@orrery/contracts';
 
 /** Bump when the algorithm changes, so cached positions are not mixed with new ones. */
-export const ORBIT_LAYOUT_VERSION = 'orbit-2';
+export const ORBIT_LAYOUT_VERSION = 'orbit-3';
 
 /** Distance between planet orbits inside a region. */
-const ORBIT_GAP = 3;
+const ORBIT_GAP = 4;
 /** Free space between neighbouring regions. */
 const REGION_GAP = 6;
 /** Distance from a planet to its moons. */
-const MOON_DISTANCE = 1.1;
+const MOON_DISTANCE = 2.3;
 
 /** Inner orbits hold the kinds a reader looks for first. */
 const KIND_ORDER: readonly NodeKind[] = [

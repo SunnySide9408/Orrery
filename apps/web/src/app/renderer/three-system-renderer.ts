@@ -1,43 +1,38 @@
-import type { DependencyGraph, GraphNode, Layout, NodeKind } from '@orrery/contracts';
+import type { DependencyGraph, GraphNode, Layout } from '@orrery/contracts';
 import {
-  AmbientLight,
-  BoxGeometry,
   BufferGeometry,
   Color,
-  ConeGeometry,
-  DirectionalLight,
   DoubleSide,
   Float32BufferAttribute,
   Group,
-  IcosahedronGeometry,
-  InstancedMesh,
   LineBasicMaterial,
   LineDashedMaterial,
   LineLoop,
   LineSegments,
+  NeutralToneMapping,
   Material,
-  Matrix4,
   Mesh,
   MeshBasicMaterial,
-  MeshLambertMaterial,
   Object3D,
-  OctahedronGeometry,
   PerspectiveCamera,
-  Points,
-  PointsMaterial,
-  Quaternion,
   Raycaster,
   RingGeometry,
   Scene,
-  SphereGeometry,
-  TorusGeometry,
+  Sphere,
   Vector2,
   Vector3,
   WebGLRenderer,
 } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { CSS2DObject, CSS2DRenderer } from 'three/addons/renderers/CSS2DRenderer.js';
-import { KIND_STYLES, type KindShape } from './kind-style';
+import { createMarkerElement } from './kind-style';
+import { createStar, PlanetField, type PlanetBody } from './planet-field';
+import { hashString, planetLook, starColor } from './planet-look';
+import { bakeSky, type BakedSky } from './sky';
 import type { SystemRenderer, SystemRendererEvents } from './system-renderer';
 
 const BACKGROUND = new Color('#020617');
@@ -49,10 +44,14 @@ const WAVE_MS = 450;
 /** Pointer travel (px) below which a press counts as a click, not a drag. */
 const CLICK_TOLERANCE = 5;
 const MOON_RADIUS = 0.22;
+/** Keeps the biggest files inside the gap between orbits (ORBIT_GAP in the layout). */
+const MAX_PLANET_RADIUS = 1.9;
+/** Picking uses a slightly larger sphere, so small moons stay easy to click. */
+const PICK_MIN_RADIUS = 0.35;
 
 interface NodeSlot {
   node: GraphNode;
-  mesh: InstancedMesh;
+  /** Instance index in the planet field. */
   index: number;
   position: Vector3;
   radius: number;
@@ -77,9 +76,10 @@ interface Glide {
 /**
  * Three.js implementation of the system view.
  *
- * Planets of one kind share an InstancedMesh (one draw call per kind), edges
- * are built only for what Angular asks to show, and labels are HTML elements
- * placed by CSS2DRenderer so they stay crisp and readable.
+ * All planets are one procedural PlanetField (three draw calls in total), each
+ * region has a star that lights its planets, and the sky is baked once into a
+ * cube map. Edges are built only for what Angular asks to show, and labels are
+ * HTML elements placed by CSS2DRenderer so they stay crisp and readable.
  *
  * The frame loop is `renderer.setAnimationLoop`. The app is zoneless, so frames
  * never trigger Angular change detection; only `events.nodePicked` crosses
@@ -89,6 +89,9 @@ export class ThreeSystemRenderer implements SystemRenderer {
   private container!: HTMLElement;
   private events!: SystemRendererEvents;
   private renderer!: WebGLRenderer;
+  /** Scene, then bloom on bright pixels (stars, galaxy cores, lava), then tone mapping. */
+  private composer!: EffectComposer;
+  private bloom!: UnrealBloomPass;
   private labels!: CSS2DRenderer;
   private camera!: PerspectiveCamera;
   private controls!: OrbitControls;
@@ -104,7 +107,11 @@ export class ThreeSystemRenderer implements SystemRenderer {
   /** Visible node labels in priority order: focused, hovered, then larger planets first. */
   private nodeLabelOrder: PlacedLabel[] = [];
   private readonly labelSizes = new WeakMap<CSS2DObject, PlacedLabel>();
-  private meshes: InstancedMesh[] = [];
+  private planets?: PlanetField;
+  private sky?: BakedSky;
+  /** Seconds of planet spin; it stands still under reduced motion. */
+  private spin = 0;
+  private lastFrame = 0;
   private edgeLines?: LineSegments;
   private halo?: Mesh;
   private graph?: DependencyGraph;
@@ -133,6 +140,8 @@ export class ThreeSystemRenderer implements SystemRenderer {
     this.renderer = new WebGLRenderer({ antialias: true });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.setClearColor(BACKGROUND);
+    // Neutral keeps hues close to the legend colours, unlike ACES.
+    this.renderer.toneMapping = NeutralToneMapping;
     this.renderer.domElement.classList.add('block', 'size-full');
     container.appendChild(this.renderer.domElement);
 
@@ -144,15 +153,19 @@ export class ThreeSystemRenderer implements SystemRenderer {
 
     this.camera = new PerspectiveCamera(50, 1, 0.1, 2000);
     this.camera.position.set(0, 50, 60);
+    this.composer = new EffectComposer(this.renderer);
+    this.composer.addPass(new RenderPass(this.scene, this.camera));
+    // A high threshold: only stars, galaxy cores and glowing cracks bloom, never labels or planets' day side.
+    this.bloom = new UnrealBloomPass(new Vector2(1, 1), 0.85, 0.55, 1);
+    this.composer.addPass(this.bloom);
+    this.composer.addPass(new OutputPass());
+
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = true;
     this.controls.maxDistance = 400;
     this.controls.minDistance = 4;
 
-    this.scene.add(new AmbientLight('#ffffff', 1.2));
-    const sun = new DirectionalLight('#ffffff', 2);
-    sun.position.set(30, 60, 20);
-    this.scene.add(sun, createStars(), this.graphGroup);
+    this.scene.add(this.graphGroup);
 
     const canvas = this.renderer.domElement;
     canvas.addEventListener('pointerdown', this.onPointerDown);
@@ -169,13 +182,38 @@ export class ThreeSystemRenderer implements SystemRenderer {
     this.clearGraph();
     this.graph = graph;
 
+    this.setSky(graph);
+
     const regionLabels = new Map(graph.regions.map((region) => [region.id, region]));
+    const planetsPerRegion = new Map<string, number>();
+    for (const node of graph.nodes) {
+      if (node.ownerId === undefined)
+        planetsPerRegion.set(node.regionId, (planetsPerRegion.get(node.regionId) ?? 0) + 1);
+    }
+    const stars = new Map<string, { position: Vector3; color: Color }>();
     let extent = 0;
     for (const position of layout.regions) {
       const region = regionLabels.get(position.regionId);
       const centre = new Vector3(position.x, 0, position.z);
       extent = Math.max(extent, centre.length() + position.radius);
       this.graphGroup.add(createRegionRing(centre, position.radius, region?.kind === 'lazy-route'));
+      const planets = planetsPerRegion.get(position.regionId) ?? 0;
+      if (planets > 0) {
+        // The star lights the region's planets; a busier region gets a bigger star.
+        const color = new Color(...starColor(position.regionId));
+        stars.set(position.regionId, {
+          position: centre,
+          color: color.clone().multiplyScalar(1.15),
+        });
+        this.graphGroup.add(
+          createStar(
+            centre,
+            0.7 + Math.min(planets, 24) * 0.02,
+            color,
+            (hashString(position.regionId) % 1000) / 20,
+          ),
+        );
+      }
       const label = createLabel(
         region ? `${region.label}${region.kind === 'lazy-route' ? ' · lazy' : ''}` : '',
         'region',
@@ -187,33 +225,39 @@ export class ThreeSystemRenderer implements SystemRenderer {
     this.extent = Math.max(10, extent);
 
     const positions = new Map(layout.nodes.map((p) => [p.nodeId, p]));
-    const byKind = new Map<NodeKind, GraphNode[]>();
-    for (const node of graph.nodes) {
-      byKind.set(node.kind, [...(byKind.get(node.kind) ?? []), node]);
-    }
-
-    for (const [kind, nodes] of byKind) {
-      const style = KIND_STYLES[kind];
-      const mesh = new InstancedMesh(
-        createGeometry(style.shape),
-        new MeshLambertMaterial({ color: '#ffffff' }),
-        nodes.length,
-      );
-      nodes.forEach((node, index) => {
-        const p = positions.get(node.id);
-        const position = new Vector3(p?.x ?? 0, p?.y ?? 0, p?.z ?? 0);
-        const radius =
-          node.ownerId === undefined
-            ? 0.35 + 0.08 * Math.sqrt(node.metrics.linesOfCode)
-            : MOON_RADIUS;
-        const label = createLabel(node.name, 'node');
-        label.position.copy(position).add(new Vector3(0, radius + 0.6, 0));
-        label.visible = false;
-        this.graphGroup.add(label);
-        this.slots.set(node.id, { node, mesh, index, position, radius, label });
+    const regionCentres = new Map(
+      layout.regions.map((r) => [r.regionId, new Vector3(r.x, 0, r.z)]),
+    );
+    const fallbackLight = { position: new Vector3(0, 40, 0), color: new Color(1, 0.95, 0.9) };
+    const bodies: PlanetBody[] = [];
+    graph.nodes.forEach((node, index) => {
+      const p = positions.get(node.id);
+      const position = new Vector3(p?.x ?? 0, p?.y ?? 0, p?.z ?? 0);
+      const radius =
+        node.ownerId === undefined
+          ? Math.min(0.45 + 0.11 * Math.sqrt(node.metrics.linesOfCode), MAX_PLANET_RADIUS)
+          : MOON_RADIUS;
+      const star = stars.get(node.regionId) ?? {
+        ...fallbackLight,
+        position: regionCentres.get(node.regionId) ?? fallbackLight.position,
+      };
+      bodies.push({
+        position,
+        radius,
+        look: planetLook(node.id, node.kind),
+        star: star.position,
+        starColor: star.color,
       });
-      this.meshes.push(mesh);
-      this.graphGroup.add(mesh);
+      const label = createLabel(node.name, 'node', node);
+      label.position.copy(position).add(new Vector3(0, radius + 0.6, 0));
+      label.visible = false;
+      this.graphGroup.add(label);
+      this.slots.set(node.id, { node, index, position, radius, label });
+    });
+    this.planets = new PlanetField(bodies);
+    this.graphGroup.add(this.planets.group);
+    for (const [regionId, centre] of regionCentres) {
+      if (stars.has(regionId)) this.graphGroup.add(createOrbits(centre, layout, regionId));
     }
 
     this.highlighted = new Set();
@@ -306,7 +350,12 @@ export class ThreeSystemRenderer implements SystemRenderer {
     geometry.setAttribute('color', new Float32BufferAttribute(colors, 3));
     this.edgeLines = new LineSegments(
       geometry,
-      new LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.9 }),
+      new LineBasicMaterial({
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.9,
+        toneMapped: false,
+      }),
     );
     this.graphGroup.add(this.edgeLines);
     this.updateEdgeRange();
@@ -332,6 +381,8 @@ export class ThreeSystemRenderer implements SystemRenderer {
     const { clientWidth: width, clientHeight: height } = this.container;
     if (width === 0 || height === 0) return;
     this.renderer.setSize(width, height, false);
+    this.composer.setPixelRatio(this.renderer.getPixelRatio());
+    this.composer.setSize(width, height);
     this.labels.setSize(width, height);
     // Render a window of a wider virtual view, so its centre sits in the middle
     // of the part of the screen the inspector does not cover.
@@ -351,14 +402,21 @@ export class ThreeSystemRenderer implements SystemRenderer {
     this.resizeObserver?.disconnect();
     this.controls.dispose();
     this.clearGraph();
+    this.sky?.dispose();
     this.scene.traverse((object) => this.disposeResources(object));
     this.scene.clear();
+    this.bloom.dispose();
+    this.composer.dispose();
     this.renderer.dispose();
     canvas.remove();
     this.labels.domElement.remove();
   }
 
   private readonly frame = (time: number): void => {
+    const delta = Math.min((time - (this.lastFrame || time)) / 1000, 0.1);
+    this.lastFrame = time;
+    if (!this.reducedMotion) this.spin += delta;
+    if (this.planets) this.planets.time = this.spin;
     if (this.shownWave !== Infinity) {
       const wave = Math.floor((time - this.revealStart) / WAVE_MS);
       if (wave > this.shownWave) {
@@ -379,7 +437,7 @@ export class ThreeSystemRenderer implements SystemRenderer {
     }
     this.controls.update();
     this.halo?.quaternion.copy(this.camera.quaternion);
-    this.renderer.render(this.scene, this.camera);
+    this.composer.render();
     this.labels.render(this.scene, this.camera);
     this.declutterLabels();
   };
@@ -456,7 +514,7 @@ export class ThreeSystemRenderer implements SystemRenderer {
 
   private overviewPosition(): Vector3 {
     // A little margin, so the outer ring labels stay on screen.
-    return new Vector3(0, 0.75, 0.66)
+    return new Vector3(0, 0.6, 0.8)
       .normalize()
       .multiplyScalar(this.fitDistance(this.extent * 1.08));
   }
@@ -474,10 +532,6 @@ export class ThreeSystemRenderer implements SystemRenderer {
 
   /** Colours, visibility and labels from the current highlight, focus and hover. */
   private applyAppearance(): void {
-    const matrix = new Matrix4();
-    const scale = new Vector3();
-    const color = new Color();
-    const rotation = new Quaternion();
     const anyHighlight = this.highlighted.size > 0;
 
     for (const [id, slot] of this.slots) {
@@ -485,11 +539,7 @@ export class ThreeSystemRenderer implements SystemRenderer {
         !anyHighlight || (this.highlighted.has(id) && (this.waves?.get(id) ?? 0) <= this.shownWave);
       // Moons stay hidden until their planet is in focus.
       const visible = slot.node.ownerId === undefined || (anyHighlight && lit);
-      scale.setScalar(visible ? slot.radius : 0);
-      slot.mesh.setMatrixAt(slot.index, matrix.compose(slot.position, rotation, scale));
-      color.set(KIND_STYLES[slot.node.kind].color);
-      if (!lit) color.lerp(BACKGROUND, 0.82);
-      slot.mesh.setColorAt(slot.index, color);
+      this.planets?.setInstance(slot.index, visible, lit);
       slot.label.visible = (anyHighlight && lit && visible) || id === this.hoveredId;
     }
     const rank = (slot: NodeSlot) =>
@@ -498,11 +548,7 @@ export class ThreeSystemRenderer implements SystemRenderer {
       .filter((slot) => slot.label.visible)
       .sort((a, b) => rank(a) - rank(b) || b.radius - a.radius || (a.node.id < b.node.id ? -1 : 1))
       .map((slot) => this.placed(slot.label));
-    for (const mesh of this.meshes) {
-      mesh.instanceMatrix.needsUpdate = true;
-      if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
-      mesh.computeBoundingSphere();
-    }
+    this.planets?.commit();
   }
 
   /** Shows the edges of the waves revealed so far. */
@@ -530,6 +576,7 @@ export class ThreeSystemRenderer implements SystemRenderer {
         side: DoubleSide,
         transparent: true,
         opacity: 0.8,
+        toneMapped: false,
       }),
     );
     this.halo.position.copy(slot.position);
@@ -543,12 +590,25 @@ export class ThreeSystemRenderer implements SystemRenderer {
       -((event.clientY - rect.top) / rect.height) * 2 + 1,
     );
     this.raycaster.setFromCamera(this.pointer, this.camera);
-    const hit = this.raycaster.intersectObjects(this.meshes, false)[0];
-    if (!hit || hit.instanceId === undefined) return null;
+    // Planets are drawn by a shader, so pick them as spheres: nearest hit wins.
+    const { ray } = this.raycaster;
+    const sphere = new Sphere();
+    const hit = new Vector3();
+    const anyHighlight = this.highlighted.size > 0;
+    let best: string | null = null;
+    let bestDistance = Infinity;
     for (const [id, slot] of this.slots) {
-      if (slot.mesh === hit.object && slot.index === hit.instanceId) return id;
+      const visible = slot.node.ownerId === undefined || (anyHighlight && this.highlighted.has(id));
+      if (!visible) continue;
+      sphere.set(slot.position, Math.max(slot.radius * 1.1, PICK_MIN_RADIUS));
+      if (!ray.intersectSphere(sphere, hit)) continue;
+      const distance = hit.distanceTo(ray.origin);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        best = id;
+      }
     }
-    return null;
+    return best;
   }
 
   private readonly onPointerDown = (event: PointerEvent): void => {
@@ -573,6 +633,22 @@ export class ThreeSystemRenderer implements SystemRenderer {
     this.applyAppearance();
   };
 
+  /** Bakes a sky for this project. The seed comes from its regions, so each project has its own. */
+  private setSky(graph: DependencyGraph): void {
+    this.sky?.dispose();
+    this.sky = undefined;
+    this.scene.background = null;
+    try {
+      this.sky = bakeSky(this.renderer, graph.regions.map((r) => r.id).join('|'));
+      this.scene.background = this.sky.texture;
+      // Keep the sky behind the map, so labels and edges stay readable.
+      this.scene.backgroundIntensity = 0.9;
+    } catch (error) {
+      // A weak GPU may fail to bake; the plain background still works.
+      console.warn('Sky could not be drawn', error);
+    }
+  }
+
   private clearGraph(): void {
     for (const child of [...this.graphGroup.children]) {
       this.disposeObject(child);
@@ -580,7 +656,8 @@ export class ThreeSystemRenderer implements SystemRenderer {
     this.slots.clear();
     this.regionLabels = [];
     this.nodeLabelOrder = [];
-    this.meshes = [];
+    this.planets?.dispose();
+    this.planets = undefined;
     this.edgeLines = undefined;
     this.halo = undefined;
   }
@@ -599,26 +676,6 @@ export class ThreeSystemRenderer implements SystemRenderer {
     for (const m of Array.isArray(material) ? material : material ? [material] : []) {
       (m as Material).dispose();
     }
-    if (object instanceof InstancedMesh) {
-      object.dispose();
-    }
-  }
-}
-
-function createGeometry(shape: KindShape): BufferGeometry {
-  switch (shape) {
-    case 'sphere':
-      return new SphereGeometry(1, 24, 16);
-    case 'icosahedron':
-      return new IcosahedronGeometry(1, 0);
-    case 'octahedron':
-      return new OctahedronGeometry(1, 0);
-    case 'torus':
-      return new TorusGeometry(0.8, 0.35, 12, 24);
-    case 'cone':
-      return new ConeGeometry(0.9, 1.6, 4);
-    case 'box':
-      return new BoxGeometry(1.4, 1.4, 1.4);
   }
 }
 
@@ -631,40 +688,55 @@ function createRegionRing(centre: Vector3, radius: number, lazy: boolean): LineL
   const geometry = new BufferGeometry().setFromPoints(points);
   // A lazy boundary is dashed, like a route that loads on demand.
   const material = lazy
-    ? new LineDashedMaterial({ color: '#818cf8', dashSize: 1, gapSize: 0.6 })
-    : new LineBasicMaterial({ color: '#334155' });
+    ? new LineDashedMaterial({ color: '#818cf8', dashSize: 1, gapSize: 0.6, toneMapped: false })
+    : new LineBasicMaterial({ color: '#334155', toneMapped: false });
   const ring = new LineLoop(geometry, material);
   if (lazy) ring.computeLineDistances();
   ring.position.copy(centre);
   return ring;
 }
 
-function createLabel(text: string, variant: 'region' | 'node'): CSS2DObject {
+function createLabel(text: string, variant: 'region' | 'node', node?: GraphNode): CSS2DObject {
   const element = document.createElement('div');
-  element.textContent = text;
   element.className =
     variant === 'region'
-      ? 'text-sm font-semibold tracking-wide text-indigo-200'
-      : 'rounded bg-slate-900/80 px-1.5 py-0.5 text-xs text-slate-100';
+      ? 'text-sm font-semibold tracking-wide text-indigo-200 [text-shadow:0_0_6px_#020617]'
+      : 'flex items-center gap-1 rounded bg-slate-900/80 px-1.5 py-0.5 text-xs text-slate-100';
+  // The marker repeats the kind as a shape, so labels do not rely on colour.
+  if (node) element.appendChild(createMarkerElement(node.kind));
+  element.append(text);
   return new CSS2DObject(element);
 }
 
-/** A cheap star field from a fixed seed, so it looks the same on every load. */
-function createStars(): Points {
-  let seed = 42;
-  const random = () => {
-    seed = (seed * 1664525 + 1013904223) % 4294967296;
-    return seed / 4294967296;
-  };
+/** Faint circles along the orbits in use, so each region reads as a solar system. */
+function createOrbits(centre: Vector3, layout: Layout, regionId: string): LineSegments {
+  const radii = new Set<number>();
+  for (const p of layout.nodes) {
+    if (p.regionId !== regionId) continue;
+    radii.add(Math.round(Math.hypot(p.x - centre.x, p.z - centre.z) * 10) / 10);
+  }
   const points: number[] = [];
-  for (let i = 0; i < 1500; i++) {
-    const direction = new Vector3(random() - 0.5, random() - 0.5, random() - 0.5).normalize();
-    points.push(...direction.multiplyScalar(500 + random() * 300).toArray());
+  const steps = 128;
+  for (const radius of radii) {
+    for (let i = 0; i < steps; i++) {
+      const a = (i / steps) * Math.PI * 2;
+      const b = ((i + 1) / steps) * Math.PI * 2;
+      points.push(Math.cos(a) * radius, 0, Math.sin(a) * radius);
+      points.push(Math.cos(b) * radius, 0, Math.sin(b) * radius);
+    }
   }
   const geometry = new BufferGeometry();
   geometry.setAttribute('position', new Float32BufferAttribute(points, 3));
-  return new Points(
+  const orbits = new LineSegments(
     geometry,
-    new PointsMaterial({ color: '#94a3b8', size: 1.2, sizeAttenuation: false }),
+    new LineBasicMaterial({
+      color: '#94a3b8',
+      transparent: true,
+      opacity: 0.08,
+      depthWrite: false,
+      toneMapped: false,
+    }),
   );
+  orbits.position.copy(centre);
+  return orbits;
 }

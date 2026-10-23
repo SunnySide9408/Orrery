@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import type { GraphNode, Region } from '@orrery/contracts';
+import { KindMarker } from '../renderer/kind-marker';
 import { KIND_STYLES } from '../renderer/kind-style';
 import { searchNodes } from './search-nodes';
 
@@ -10,6 +11,7 @@ import { searchNodes } from './search-nodes';
  */
 @Component({
   selector: 'app-search',
+  imports: [KindMarker],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'relative block' },
   template: `
@@ -51,10 +53,7 @@ import { searchNodes } from './search-nodes';
           class="flex cursor-pointer items-baseline gap-2 px-3 py-1.5 text-sm"
           [class.bg-slate-700]="i === active()"
         >
-          <span
-            class="size-2 shrink-0 rounded-full"
-            [style.background]="style(hit.node).color"
-          ></span>
+          <app-kind-marker class="self-center" [kind]="hit.node.kind" />
           <span class="font-medium text-slate-100">{{ hit.node.name }}</span>
           <span class="truncate text-xs text-slate-300"
             >{{ style(hit.node).label }} · {{ hit.regionLabel }}</span
