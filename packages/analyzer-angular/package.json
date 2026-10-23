@@ -1,0 +1,14 @@
+{
+  "name": "@orrery/analyzer-angular",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Parses Angular sources with the TypeScript compiler API into an analysis result. Runs in Node (CLI) and in a Web Worker.",
+  "type": "module",
+  "exports": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@orrery/contracts": "0.0.0"
+  }
+}
