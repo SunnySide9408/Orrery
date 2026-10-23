@@ -21,7 +21,8 @@ const POOL_SIZE = 80;
 /** Gap between a planet's edge and its label, in pixels. */
 const GAP = 4;
 
-interface Box {
+/** A screen rectangle in pixels, relative to the map. */
+export interface Box {
   left: number;
   top: number;
   right: number;
@@ -84,12 +85,16 @@ export class LabelLayer {
     });
   }
 
-  /** Places region labels and up to {@link POOL_SIZE} node labels for this frame. */
+  /**
+   * Places region labels and up to {@link POOL_SIZE} node labels for this
+   * frame. Node labels also keep out of `keepClear`, the panels over the map.
+   */
   update(
     camera: PerspectiveCamera,
     width: number,
     height: number,
     requests: readonly LabelRequest[],
+    keepClear: readonly Box[] = [],
   ): void {
     const taken: Box[] = [];
     // Pixels per world unit at distance 1, for the planet's size on screen.
@@ -107,6 +112,8 @@ export class LabelLayer {
       taken.push(box);
       this.show(region, box);
     }
+
+    taken.push(...keepClear);
 
     // Reuse the element that already shows a node, so its content stays put.
     const byNode = new Map<string, PooledLabel>();

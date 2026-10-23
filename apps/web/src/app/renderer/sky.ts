@@ -24,8 +24,16 @@ import {
 import { GALAXY_FRAGMENT, GALAXY_VERTEX, SKY_FRAGMENT, SKY_VERTEX } from './planet-shaders';
 import { hashString, seededRandom } from './planet-look';
 
-/** Edge length of each cube face. 1024 keeps stars sharp on a 1440p screen. */
-const FACE_SIZE = 1024;
+/**
+ * Texture sizes. A 1024 cube face keeps stars sharp on a 1440p screen; the
+ * backdrop galaxy needs 2048 to stay sharp (see below). Lite graphics halves
+ * both: a quarter of the memory and of the one-off bake, which on a software
+ * GPU otherwise holds up the first paint for seconds.
+ */
+export const SKY_SIZES = {
+  full: { face: 1024, backdrop: 2048 },
+  lite: { face: 512, backdrop: 1024 },
+} as const;
 
 interface GalaxySpec {
   direction: readonly [number, number, number];
@@ -99,11 +107,15 @@ export interface BakedSky {
  *
  * The big backdrop galaxy covers about 40° of the view: a 1024² cube face
  * would stretch it to roughly a third of screen resolution and blur its arms.
- * It is baked into its own square texture instead (`backdropSize` pixels,
+ * It is baked into its own square texture instead (`sizes.backdrop` pixels,
  * 2048 gives about 50 texels per degree) and drawn as one quad, still a
  * single texture lookup per pixel.
  */
-export function bakeSky(renderer: WebGLRenderer, seedText: string, backdropSize = 2048): BakedSky {
+export function bakeSky(
+  renderer: WebGLRenderer,
+  seedText: string,
+  sizes: { face: number; backdrop: number } = SKY_SIZES.full,
+): BakedSky {
   const random = seededRandom(hashString(seedText));
   const sky = new Scene();
   sky.add(
@@ -140,7 +152,7 @@ export function bakeSky(renderer: WebGLRenderer, seedText: string, backdropSize 
     });
     let mesh: Mesh;
     if (galaxy.backdrop) {
-      backdropTarget = bakeQuad(renderer, material, backdropSize);
+      backdropTarget = bakeQuad(renderer, material, sizes.backdrop);
       material.dispose();
       mesh = new Mesh(
         new PlaneGeometry(galaxy.size, galaxy.size),
@@ -170,7 +182,7 @@ export function bakeSky(renderer: WebGLRenderer, seedText: string, backdropSize 
     mesh.rotateZ(random() * Math.PI * 2);
   }
 
-  const target = new WebGLCubeRenderTarget(FACE_SIZE, {
+  const target = new WebGLCubeRenderTarget(sizes.face, {
     type: HalfFloatType,
     generateMipmaps: true,
     minFilter: LinearMipmapLinearFilter,

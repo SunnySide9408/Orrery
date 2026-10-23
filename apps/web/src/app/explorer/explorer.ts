@@ -67,6 +67,7 @@ function storeGraphics(value: GraphicsQuality): void {
       </div>
     } @else if (!state.focus()) {
       <p
+        data-keep-clear
         class="pointer-events-none absolute top-3 left-4 max-w-xs rounded-md bg-slate-950/85 p-2 text-sm text-slate-300"
       >
         Each ring is a part of the app; dashed rings are lazy-loaded routes. Click a planet to
@@ -82,6 +83,7 @@ function storeGraphics(value: GraphicsQuality): void {
     }
 
     <section
+      data-keep-clear
       class="pointer-events-none absolute bottom-3 left-4 rounded-md bg-slate-950/85 p-2 text-xs text-slate-200"
       aria-label="Legend"
     >

@@ -31,7 +31,7 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import { LabelLayer, type LabelRequest } from './label-layer';
+import { LabelLayer, type Box, type LabelRequest } from './label-layer';
 import { createStar, PlanetField, type PlanetBody } from './planet-field';
 import { hashString, planetLook, starColor } from './planet-look';
 import {
@@ -43,7 +43,7 @@ import {
   type GraphicsQuality,
   type GraphicsSetting,
 } from './quality';
-import { bakeSky, SKY_INTENSITY, type BakedSky } from './sky';
+import { bakeSky, SKY_INTENSITY, SKY_SIZES, type BakedSky } from './sky';
 import type { SystemRenderer, SystemRendererEvents } from './system-renderer';
 
 const BACKGROUND = new Color('#020617');
@@ -179,6 +179,9 @@ export class ThreeSystemRenderer implements SystemRenderer {
   private readonly stepDown = new StepDownMonitor();
   private readonly counter = new FrameCounter();
   private readout: HTMLElement | null = null;
+  /** Panels over the map (`data-keep-clear`) that labels avoid, refreshed every few frames. */
+  private keepClear: Box[] = [];
+  private framesSinceClear = Infinity;
 
   initialize(container: HTMLElement, events: SystemRendererEvents): void {
     this.container = container;
@@ -493,8 +496,9 @@ export class ThreeSystemRenderer implements SystemRenderer {
     if (this.readout) return;
     this.readout = document.createElement('div');
     this.readout.className =
-      'pointer-events-none absolute bottom-3 rounded-md bg-slate-950/85 px-2 py-1 font-mono text-xs text-slate-200';
+      'pointer-events-none absolute top-3 max-w-xs rounded-md bg-slate-950/85 px-2 py-1 font-mono text-xs text-slate-200';
     this.readout.dataset['frameRate'] = '';
+    this.readout.dataset['keepClear'] = '';
     this.readout.style.right = `${this.rightInset + 16}px`;
     this.container.appendChild(this.readout);
   }
@@ -503,12 +507,14 @@ export class ThreeSystemRenderer implements SystemRenderer {
     if (pixels === this.rightInset) return;
     this.rightInset = pixels;
     if (this.readout) this.readout.style.right = `${pixels + 16}px`;
+    this.framesSinceClear = Infinity;
     this.resize();
   }
 
   resize(): void {
     const { clientWidth: width, clientHeight: height } = this.container;
     if (width === 0 || height === 0) return;
+    this.framesSinceClear = Infinity;
     this.renderer.setSize(width, height, false);
     this.composer.setPixelRatio(this.renderer.getPixelRatio());
     this.composer.setSize(width, height);
@@ -573,11 +579,14 @@ export class ThreeSystemRenderer implements SystemRenderer {
     else this.renderer.render(this.scene, this.camera);
 
     this.updateDetail();
+    // Reading layout every frame would force style recalculation; panels move rarely.
+    if (++this.framesSinceClear >= 30) this.measureKeepClear();
     this.labels.update(
       this.camera,
       this.container.clientWidth,
       this.container.clientHeight,
       this.labelRequests(),
+      this.keepClear,
     );
 
     if (
@@ -697,11 +706,28 @@ export class ThreeSystemRenderer implements SystemRenderer {
     this.events.qualityChanged?.(quality, automatic);
   }
 
+  private measureKeepClear(): void {
+    this.framesSinceClear = 0;
+    const origin = this.container.getBoundingClientRect();
+    const scope = this.container.parentElement ?? this.container;
+    this.keepClear = [...scope.querySelectorAll<HTMLElement>('[data-keep-clear]')].map((panel) => {
+      const rect = panel.getBoundingClientRect();
+      return {
+        left: rect.left - origin.left,
+        right: rect.right - origin.left,
+        top: rect.top - origin.top,
+        bottom: rect.bottom - origin.top,
+      };
+    });
+  }
+
   private updateReadout(): void {
     const readout = this.readout!;
     const { memory, render } = this.renderer.info;
     readout.textContent =
-      `${Math.round(this.counter.fps)} fps · ${this.counter.frameMs.toFixed(1)} ms · ` +
+      (this.counter.fps > 0
+        ? `${Math.round(this.counter.fps)} fps · ${this.counter.frameMs.toFixed(1)} ms · `
+        : 'measuring… · ') +
       `${render.calls} draws · ${this.slots.size} nodes · ${this.edgeCount} edges · ` +
       `${this.labels.shownCount} labels · ${this.quality} · ${shortGpuName(gpuName(this.renderer.getContext()))}`;
     readout.dataset['fps'] = this.counter.fps.toFixed(1);
@@ -867,11 +893,11 @@ export class ThreeSystemRenderer implements SystemRenderer {
     this.sky = undefined;
     this.scene.background = null;
     try {
-      // Lite keeps the backdrop galaxy at a quarter of the memory.
+      // Lite bakes at half size: a quarter of the memory and of the bake time.
       this.sky = bakeSky(
         this.renderer,
         graph.regions.map((r) => r.id).join('|'),
-        this.quality === 'full' ? 2048 : 1024,
+        SKY_SIZES[this.quality],
       );
       this.scene.background = this.sky.texture;
       // Keep the sky behind the map, so labels and edges stay readable.
