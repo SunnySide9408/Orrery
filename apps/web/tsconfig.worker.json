@@ -1,0 +1,9 @@
+/* The analysis worker: no DOM, the TypeScript compiler allowed. */
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "lib": ["es2022", "webworker"],
+    "types": []
+  },
+  "include": ["src/**/*.worker.ts"]
+}

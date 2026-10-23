@@ -3,6 +3,14 @@
   "index": "/index.html",
   "assetGroups": [
     {
+      "name": "analysis-worker",
+      "installMode": "lazy",
+      "updateMode": "lazy",
+      "resources": {
+        "files": ["/worker-*.js"]
+      }
+    },
+    {
       "name": "app",
       "installMode": "prefetch",
       "resources": {

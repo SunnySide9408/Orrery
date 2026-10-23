@@ -19,6 +19,8 @@
           "options": {
             "browser": "apps/web/src/main.ts",
             "tsConfig": "apps/web/tsconfig.app.json",
+            "webWorkerTsConfig": "apps/web/tsconfig.worker.json",
+            "allowedCommonJsDependencies": ["typescript"],
             "assets": [
               {
                 "glob": "**/*",
