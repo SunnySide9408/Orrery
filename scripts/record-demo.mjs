@@ -118,6 +118,8 @@ cdp.on('Page.screencastFrame', ({ data, metadata, sessionId }) => {
   cdp.send('Page.screencastFrameAck', { sessionId }).catch(() => {});
 });
 
+// Start from the app's background rather than a white blank page.
+await page.setContent('<html style="background:#020617"></html>');
 await page.mouse.move(1100, 640);
 await cdp.send('Page.startScreencast', {
   format: 'jpeg',
