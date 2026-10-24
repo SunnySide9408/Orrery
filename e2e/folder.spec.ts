@@ -59,7 +59,10 @@ test('a picked folder becomes a graph, and nothing is sent anywhere', async ({ p
 
   await page.getByRole('link', { name: 'Open the 3D map' }).click();
   await expect(page).toHaveURL(/\/local$/);
-  await expect(page.getByText('analysed in this browser')).toBeVisible();
+  // The overview keeps a visitor's own project apart from the demo.
+  await expect(page.getByRole('region', { name: 'Overview' })).toContainText(
+    'Your folder, analysed in this browser. Nothing was uploaded.',
+  );
   await expect(page.locator('canvas')).toBeVisible();
 
   await page.keyboard.press('/');

@@ -13,6 +13,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { NODE_KINDS } from '@orrery/contracts';
+import { OverviewPanel } from '../overview/overview-panel';
 import { KindMarker } from '../renderer/kind-marker';
 import { KIND_STYLES } from '../renderer/kind-style';
 import type { GraphicsQuality, GraphicsSetting } from '../renderer/quality';
@@ -42,10 +43,20 @@ function storeGraphics(value: GraphicsQuality): void {
   }
 }
 
+/** Whether the overview panel is hidden, kept per browser like the graphics choice. */
+const OVERVIEW_KEY = 'orrery.overview';
+function storedOverviewShown(): boolean {
+  try {
+    return localStorage.getItem(OVERVIEW_KEY) !== 'hidden';
+  } catch {
+    return true;
+  }
+}
+
 /** The 3D map. Angular decides what is selected and related; the renderer only draws it. */
 @Component({
   selector: 'app-explorer',
-  imports: [RouterLink, KindMarker],
+  imports: [RouterLink, KindMarker, OverviewPanel],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'relative block size-full overflow-hidden' },
   template: `
@@ -66,20 +77,29 @@ function storeGraphics(value: GraphicsQuality): void {
         </p>
       </div>
     } @else if (!state.focus()) {
-      <p
-        data-keep-clear
-        class="pointer-events-none absolute top-3 left-4 max-w-xs rounded-md bg-slate-950/85 p-2 text-sm text-slate-300"
-      >
-        Each ring is a part of the app; dashed rings are lazy-loaded routes. Click a planet to
-        inspect it, or try
+      @if (overviewShown()) {
+        <section
+          data-keep-clear
+          class="absolute top-3 left-4 max-h-[45%] w-[22rem] sm:max-h-[calc(100%-13rem)] max-w-[calc(100%-2rem)] overflow-y-auto rounded-md bg-slate-950/85 p-3 backdrop-blur-sm"
+          aria-label="Overview"
+        >
+          <app-overview-panel
+            [sample]="sample()"
+            (selected)="state.select($event)"
+            (suggested)="state.selectByName(sample().info.suggestedNode)"
+            (hidden)="setOverviewShown(false)"
+          />
+        </section>
+      } @else {
         <button
           type="button"
-          class="pointer-events-auto text-amber-300 underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-sky-400"
-          (click)="state.selectByName(sample().info.suggestedNode)"
+          data-keep-clear
+          class="absolute top-3 left-4 rounded-md border border-slate-700 bg-slate-950/85 px-2 py-1 text-sm text-slate-200 hover:bg-slate-800 focus-visible:outline-2 focus-visible:outline-sky-400"
+          (click)="setOverviewShown(true)"
         >
-          {{ sample().info.suggestedNode }}</button
-        >. Drag to orbit, scroll to zoom, Esc to go back.
-      </p>
+          Show overview
+        </button>
+      }
     }
 
     <section
@@ -133,6 +153,7 @@ export class Explorer {
 
   protected readonly sample = this.state.sample;
   protected readonly webglFailed = signal(false);
+  protected readonly overviewShown = signal(storedOverviewShown());
   /** What the renderer reports, so the toggle shows the quality really in use. */
   protected readonly quality = signal<{ quality: GraphicsQuality; automatic: boolean } | null>(
     null,
@@ -198,6 +219,16 @@ export class Explorer {
       // "Reset view": back to the overview camera, whatever is selected.
       if (this.state.resets() > 0) untracked(() => this.renderer?.focusNode(null));
     });
+  }
+
+  protected setOverviewShown(shown: boolean): void {
+    this.overviewShown.set(shown);
+    try {
+      if (shown) localStorage.removeItem(OVERVIEW_KEY);
+      else localStorage.setItem(OVERVIEW_KEY, 'hidden');
+    } catch {
+      // Not remembered; the choice still applies until the page closes.
+    }
   }
 
   protected toggleLite(): void {

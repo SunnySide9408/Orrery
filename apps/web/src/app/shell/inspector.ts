@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import type { ProviderScope } from '@orrery/contracts';
-import { findingTitle, SEVERITY_CLASS } from '../findings/finding-text';
+import type { Finding, ProviderScope } from '@orrery/contracts';
+import type { GraphIndex } from '@orrery/graph-core';
+import { findingTitle, SEVERITY_CLASS, SEVERITY_TEXT } from '../findings/finding-text';
 import { KIND_STYLES } from '../renderer/kind-style';
 import type { Focus } from './focus';
 
-const SCOPE_LABELS: Record<ProviderScope, string> = {
+export const SCOPE_LABELS: Record<ProviderScope, string> = {
   root: 'root',
   platform: 'platform',
   any: 'any (one per lazy injector)',
@@ -81,11 +82,16 @@ const SCOPE_LABELS: Record<ProviderScope, string> = {
               <span
                 class="mr-1 rounded px-1 text-xs uppercase"
                 [class]="severityClass[finding.severity]"
-                >{{ finding.severity }}</span
+                [title]="severityText[finding.severity].meaning"
+                >{{ severityText[finding.severity].label }}</span
               >
-              <a routerLink="./findings" queryParamsHandling="preserve" [class]="inlineLinkClass">{{
-                title(finding)
-              }}</a>
+              <a
+                routerLink="./findings"
+                [fragment]="finding.id"
+                queryParamsHandling="preserve"
+                [class]="inlineLinkClass"
+                >{{ title(finding) }}</a
+              >
             </li>
           }
         </ul>
@@ -191,6 +197,8 @@ const SCOPE_LABELS: Record<ProviderScope, string> = {
 })
 export class Inspector {
   readonly focus = input.required<Focus>();
+  /** Lets finding titles name files. */
+  readonly index = input.required<GraphIndex>();
   readonly selected = output<string>();
   readonly impactToggled = output<boolean>();
   readonly closed = output();
@@ -198,7 +206,10 @@ export class Inspector {
   protected readonly style = computed(() => KIND_STYLES[this.focus().node.kind]);
   protected readonly scopeLabels = SCOPE_LABELS;
   protected readonly severityClass = SEVERITY_CLASS;
-  protected readonly title = findingTitle;
+  protected readonly severityText = SEVERITY_TEXT;
+  protected title(finding: Finding): string {
+    return findingTitle(finding, this.index());
+  }
   protected readonly inlineLinkClass =
     'text-slate-200 underline decoration-slate-500 underline-offset-2 hover:decoration-slate-200 focus-visible:outline-2 focus-visible:outline-sky-400';
 
