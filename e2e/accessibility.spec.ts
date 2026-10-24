@@ -1,5 +1,8 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test, type Page } from '@playwright/test';
+import { expect as baseExpect, test, type Page } from '@playwright/test';
+
+/** Software WebGL can hold up the first paint for seconds while the other test worker renders. */
+const expect = baseExpect.configure({ timeout: 30_000 });
 
 /** WCAG 2.2 level A and AA rules, the target in docs/ROADMAP.md. */
 const WCAG = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
@@ -11,8 +14,10 @@ async function violations(page: Page): Promise<string[]> {
   );
 }
 
+const mapReady = (page: Page) => expect(page.locator('canvas')).toBeVisible();
+
 const pages: [string, string, (page: Page) => Promise<void>][] = [
-  ['overview', './realworld', (page) => expect(page.locator('canvas')).toBeVisible()],
+  ['overview', './realworld', (page) => mapReady(page)],
   [
     'a selected node with full impact',
     './realworld?node=src%2Fapp%2Fcore%2Fauth%2Fservices%2Fuser.service.ts&impact=1',
@@ -47,7 +52,7 @@ for (const [name, url, ready] of pages) {
 
 test('keyboard only: search, select, full impact, and back to the overview', async ({ page }) => {
   await page.goto('./realworld');
-  await expect(page.locator('canvas')).toBeVisible();
+  await mapReady(page);
 
   // Tab reaches the search box before anything inside the map.
   const search = page.getByRole('combobox');
