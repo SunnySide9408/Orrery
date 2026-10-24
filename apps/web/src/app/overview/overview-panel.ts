@@ -39,6 +39,37 @@ import { describeOverview } from './overview';
       </div>
       <div>
         <dt class="text-xs font-medium tracking-wider text-slate-400 uppercase">
+          Worth a look ({{ o.findings.length }})
+        </dt>
+        <dd>
+          @if (o.findings.length === 0) {
+            <p class="text-slate-300">No dependency cycles, and no file is unusually connected.</p>
+          } @else {
+            <ul class="space-y-1">
+              @for (entry of topFindings(); track entry.finding.id) {
+                <li class="flex items-baseline gap-1.5">
+                  <span
+                    class="shrink-0 rounded px-1 text-[0.65rem] uppercase"
+                    [class]="severityClass[entry.finding.severity]"
+                    [title]="severityText[entry.finding.severity].meaning"
+                    >{{ severityText[entry.finding.severity].label }}</span
+                  >
+                  <a routerLink="findings" [fragment]="entry.finding.id" [class]="linkClass">{{
+                    entry.title
+                  }}</a>
+                </li>
+              }
+            </ul>
+            @if (o.findings.length > topFindings().length) {
+              <a routerLink="findings" [class]="linkClass + ' mt-1 inline-block text-xs'"
+                >All {{ o.findings.length }} findings</a
+              >
+            }
+          }
+        </dd>
+      </div>
+      <div>
+        <dt class="text-xs font-medium tracking-wider text-slate-400 uppercase">
           Parts of the app
         </dt>
         <dd class="text-slate-200">
@@ -78,37 +109,6 @@ import { describeOverview } from './overview';
           </dd>
         </div>
       }
-      <div>
-        <dt class="text-xs font-medium tracking-wider text-slate-400 uppercase">
-          Worth a look ({{ o.findings.length }})
-        </dt>
-        <dd>
-          @if (o.findings.length === 0) {
-            <p class="text-slate-300">No dependency cycles, and no file is unusually connected.</p>
-          } @else {
-            <ul class="space-y-1">
-              @for (entry of topFindings(); track entry.finding.id) {
-                <li class="flex items-baseline gap-1.5">
-                  <span
-                    class="shrink-0 rounded px-1 text-[0.65rem] uppercase"
-                    [class]="severityClass[entry.finding.severity]"
-                    [title]="severityText[entry.finding.severity].meaning"
-                    >{{ severityText[entry.finding.severity].label }}</span
-                  >
-                  <a routerLink="findings" [fragment]="entry.finding.id" [class]="linkClass">{{
-                    entry.title
-                  }}</a>
-                </li>
-              }
-            </ul>
-            @if (o.findings.length > topFindings().length) {
-              <a routerLink="findings" [class]="linkClass + ' mt-1 inline-block text-xs'"
-                >All {{ o.findings.length }} findings</a
-              >
-            }
-          }
-        </dd>
-      </div>
     </dl>
 
     <p class="mt-3 text-xs text-slate-400">

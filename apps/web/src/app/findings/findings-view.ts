@@ -4,6 +4,7 @@ import {
   Component,
   computed,
   effect,
+  ElementRef,
   inject,
   Injector,
 } from '@angular/core';
@@ -256,6 +257,7 @@ const EDGE_LABELS: Record<EdgeKind, string> = {
 export class FindingsView {
   protected readonly state = inject(ExplorerState);
   private readonly injector = inject(Injector);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   protected readonly fragment = toSignal(inject(ActivatedRoute).fragment, {
     initialValue: null,
   });
@@ -323,9 +325,13 @@ export class FindingsView {
       if (!card) return;
       afterNextRender(
         () => {
+          // Scroll this view only: scrollIntoView would also scroll the shell and hide its header.
           const element = document.getElementById(card.domId);
-          element?.scrollIntoView?.({ block: 'start' });
-          element?.focus({ preventScroll: true });
+          if (!element) return;
+          const view = this.host.nativeElement;
+          view.scrollTop +=
+            element.getBoundingClientRect().top - view.getBoundingClientRect().top - 16;
+          element.focus({ preventScroll: true });
         },
         { injector: this.injector },
       );

@@ -25,6 +25,11 @@ function inspectorInset(): number {
   return window.innerWidth >= 768 ? 344 : 0;
 }
 
+/** Width of the overview panel (w-[22rem] plus its margin), on the left. */
+function overviewInset(): number {
+  return window.innerWidth >= 768 ? 368 : 0;
+}
+
 /** The visitor's graphics choice, kept per browser. Storage can be missing or blocked. */
 const GRAPHICS_KEY = 'orrery.graphics';
 function storedGraphics(): GraphicsSetting {
@@ -254,7 +259,8 @@ export class Explorer {
     const focus = this.state.focus();
     const renderer = this.renderer;
     if (!renderer) return;
-    renderer.setRightInset(focus ? inspectorInset() : 0);
+    const overview = !focus && this.overviewShown() && !this.webglFailed();
+    renderer.setInsets(overview ? overviewInset() : 0, focus ? inspectorInset() : 0);
     // Highlight first: the camera frames the focused node with its highlighted neighbours.
     renderer.highlightNodes(focus?.litNodeIds ?? new Set(), focus?.waves);
     renderer.focusNode(focus?.node.id ?? null);
