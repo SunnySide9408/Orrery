@@ -72,12 +72,21 @@ test('UserService: who uses it, the full impact, and the finding with its eviden
   );
   await expect(inspector.getByRole('heading', { name: /^Step 2/ })).toBeVisible();
 
-  await inspector.getByRole('link', { name: /High fan-in/ }).click();
-  await expect(page).toHaveURL(/\/realworld\/findings/);
-  const finding = page.getByTestId('finding').filter({ hasText: 'High fan-in' });
-  await expect(finding).toContainText('95th percentile');
-  await expect(finding).toContainText('Limits');
-  await expect(finding).toContainText(/line \d+/);
+  // The inspector links to that one finding, which opens with its evidence showing.
+  await inspector.getByRole('link', { name: /UserService is used directly by/ }).click();
+  await expect(page).toHaveURL(/\/realworld\/findings.*#high-fan-in/);
+  const finding = page.getByTestId('finding').filter({ hasText: 'UserService is used directly' });
+  await expect(finding).toBeFocused();
+  // Only the findings view scrolls: the header and the view switch stay on screen.
+  await expect(page.getByRole('link', { name: '3D map' })).toBeInViewport();
+  await expect(finding).toContainText('What to check');
+  await expect(finding.getByText('95th percentile', { exact: false }).first()).toBeVisible();
+  await expect(finding.getByText(/line \d+/).first()).toBeVisible();
+
+  // And back to the map, with the file selected.
+  await finding.getByRole('link', { name: 'Show in the map' }).click();
+  await expect(page).toHaveURL(/\/realworld\?node=/);
+  await expect(inspector.getByRole('heading', { name: 'UserService' })).toBeVisible();
 });
 
 test('works offline once loaded', async ({ page, context }) => {

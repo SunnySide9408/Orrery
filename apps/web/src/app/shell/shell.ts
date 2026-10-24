@@ -152,6 +152,7 @@ import { Search } from './search';
         >
           <app-inspector
             [focus]="f"
+            [index]="sample.index"
             (selected)="state.select($event)"
             (impactToggled)="state.setShowImpact($event)"
             (closed)="state.select(null)"

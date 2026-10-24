@@ -20,5 +20,6 @@ Short records of the choices that shape Orrery: the context, what was decided, w
 | [0014](0014-performance-budget.md)          | What is the performance budget?           | 50–60 fps at 500 files / 2,000 edges (measured: 120 fps), a small initial bundle, the compiler only in the worker, no memory growth.           |
 | [0015](0015-deterministic-layout.md)        | Why not a force-directed layout?          | Positions come from sorted IDs and counts, so the map never reshuffles and position itself means something (region, kind).                     |
 | [0016](0016-edge-direction.md)              | Which way do edges point?                 | Source depends on target, like an `import`; dependants are incoming edges, and impact walks them outwards.                                     |
+| [0017](0017-findings-in-two-levels.md)      | How are findings explained?               | An overview on the map, findings grouped by rule with why and what to check first, evidence one click away, links between findings and map.    |
 
 New records get the next number. A record that is replaced keeps its text and gets a note pointing to the new one.

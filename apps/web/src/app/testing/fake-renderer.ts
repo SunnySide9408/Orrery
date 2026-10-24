@@ -40,7 +40,7 @@ export class FakeRenderer implements SystemRenderer {
   setFrameRateVisible() {
     /* not needed */
   }
-  setRightInset() {
+  setInsets() {
     /* not needed */
   }
   resize() {

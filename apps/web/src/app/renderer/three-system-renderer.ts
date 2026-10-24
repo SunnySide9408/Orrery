@@ -168,7 +168,8 @@ export class ThreeSystemRenderer implements SystemRenderer {
   /** Planets big enough on screen to show their moons. */
   private moonOwners = new Set<string>();
   private reducedMotion = false;
-  private rightInset = 0;
+  /** Screen pixels covered by UI on each side. */
+  private insets = { left: 0, right: 0 };
   private glide: Glide | null = null;
   /** Start time of the formation reveal, or null when it is over. */
   private revealStart: number | null = null;
@@ -499,14 +500,14 @@ export class ThreeSystemRenderer implements SystemRenderer {
       'pointer-events-none absolute top-3 max-w-xs rounded-md bg-slate-950/85 px-2 py-1 font-mono text-xs text-slate-200';
     this.readout.dataset['frameRate'] = '';
     this.readout.dataset['keepClear'] = '';
-    this.readout.style.right = `${this.rightInset + 16}px`;
+    this.readout.style.right = `${this.insets.right + 16}px`;
     this.container.appendChild(this.readout);
   }
 
-  setRightInset(pixels: number): void {
-    if (pixels === this.rightInset) return;
-    this.rightInset = pixels;
-    if (this.readout) this.readout.style.right = `${pixels + 16}px`;
+  setInsets(left: number, right: number): void {
+    if (left === this.insets.left && right === this.insets.right) return;
+    this.insets = { left, right };
+    if (this.readout) this.readout.style.right = `${right + 16}px`;
     this.framesSinceClear = Infinity;
     this.resize();
   }
@@ -519,11 +520,14 @@ export class ThreeSystemRenderer implements SystemRenderer {
     this.composer.setPixelRatio(this.renderer.getPixelRatio());
     this.composer.setSize(width, height);
     // Render a window of a wider virtual view, so its centre sits in the middle
-    // of the part of the screen the inspector does not cover.
-    const inset = Math.min(this.rightInset, width / 2);
-    this.camera.aspect = (width + inset) / height;
-    if (inset > 0) this.camera.setViewOffset(width + inset, height, inset, 0, width, height);
-    else this.camera.clearViewOffset();
+    // of the part of the screen the overview or the inspector does not cover.
+    const { left, right } = this.visibleInsets(width);
+    this.camera.aspect = (width + left + right) / height;
+    if (left + right > 0) {
+      this.camera.setViewOffset(width + left + right, height, right, 0, width, height);
+    } else {
+      this.camera.clearViewOffset();
+    }
     this.camera.updateProjectionMatrix();
   }
 
@@ -778,12 +782,24 @@ export class ThreeSystemRenderer implements SystemRenderer {
       .multiplyScalar(this.fitDistance(this.extent * 1.08));
   }
 
+  /** The insets, scaled down so together they never cover more than half the view. */
+  private visibleInsets(width: number): { left: number; right: number } {
+    const { left, right } = this.insets;
+    const scale = Math.min(1, width / 2 / Math.max(1, left + right));
+    return { left: left * scale, right: right * scale };
+  }
+
+  private coveredWidth(width: number): number {
+    const { left, right } = this.visibleInsets(width);
+    return left + right;
+  }
+
   /** Camera distance at which a sphere of `radius` fits the narrower side of the view. */
   private fitDistance(radius: number): number {
     const vertical = (this.camera.fov * Math.PI) / 360;
     const { clientWidth: width, clientHeight: height } = this.container;
     const visibleAspect =
-      height > 0 ? (width - Math.min(this.rightInset, width / 2)) / height : this.camera.aspect;
+      height > 0 ? (width - this.coveredWidth(width)) / height : this.camera.aspect;
     const horizontal = Math.atan(Math.tan(vertical) * visibleAspect);
     // Graph content is mostly flat (orbits lie in a plane), so tan is a closer fit than sin.
     return radius / Math.tan(Math.min(vertical, horizontal));

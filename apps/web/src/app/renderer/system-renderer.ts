@@ -56,10 +56,11 @@ export interface SystemRenderer {
   /** A small frame-rate and draw-call readout over the map, for performance checks. */
   setFrameRateVisible(visible: boolean): void;
   /**
-   * Pixels on the right covered by UI (the inspector). The view centres and
-   * frames content in the space that is left. Call before `focusNode`.
+   * Pixels on the left (the overview) and right (the inspector) covered by UI.
+   * The view centres and frames content in the space that is left. Call
+   * before `focusNode`.
    */
-  setRightInset(pixels: number): void;
+  setInsets(left: number, right: number): void;
   resize(): void;
   dispose(): void;
 }
